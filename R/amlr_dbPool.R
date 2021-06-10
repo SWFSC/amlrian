@@ -20,7 +20,7 @@
 #' @seealso https://github.com/rstudio/pool
 #'
 #' @export
-amlr_pinnipeds_dbPool <- function(Database, Driver = "SQL Server", Server = "swc-***REMOVED***-s",
+amlr_dbPool <- function(Database, Driver = "SQL Server", Server = "swc-***REMOVED***-s",
                                   idleTimeout = 3600000, ...) {
   try(pool::dbPool(
     drv = odbc::odbc(),
