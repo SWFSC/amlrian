@@ -6,24 +6,30 @@
 \alias{mod_database_server}
 \title{Database module for AMLR shiny apps}
 \usage{
-mod_database_ui(id, name.prod, name.test, col.width = 5)
+mod_database_ui(id, db.name.prod, db.name.test, remote_valid, col.width = 5)
 
 mod_database_server(
   id,
-  name.prod,
-  name.test,
+  db.name.prod,
+  db.name.test,
   pool.remote.prod,
   pool.remote.test,
+  pool.local.prod,
+  pool.local.test,
   db.driver,
-  db.server
+  db.server.remote,
+  db.server.local
 )
 }
 \arguments{
 \item{id}{character used to specify namespace, see \code{shiny::\link[shiny]{NS}}}
 
-\item{name.prod}{character; name of production database on SWFSC server}
+\item{db.name.prod}{character; name of production database on SWFSC server}
 
-\item{name.test}{character; name of test database on SWFSC server}
+\item{db.name.test}{character; name of test database on SWFSC server}
+
+\item{remote_valid}{logical; indicates if the remote (TRUE) or local (FALSE)
+database connection should be the default}
 
 \item{col.width}{integer; column width of column of UI widgets}
 
@@ -33,9 +39,17 @@ A DBI database connection pool connected to the remote PRODUCTION database, e.g.
 \item{pool.remote.test}{output of a \code{\link[pool]{dbPool}} call.
 A DBI database connection pool connected to the remote TEST database, e.g. '***REMOVED***_Test'}
 
+\item{pool.local.prod}{output of a \code{\link[pool]{dbPool}} call.
+A DBI database connection pool connected to the local PRODUCTION database, e.g. '***REMOVED***'}
+
+\item{pool.local.test}{output of a \code{\link[pool]{dbPool}} call.
+A DBI database connection pool connected to the local TEST database, e.g. '***REMOVED***_Test'}
+
 \item{db.driver}{character; name of driver used to connect to remote database}
 
-\item{db.server}{character; name of server where remote database is hosted}
+\item{db.server.remote}{character; name of server where remote database is hosted}
+
+\item{db.server.local}{character; name of server where local database is hosted}
 }
 \value{
 \code{mod_database_server} returns a reactive of the pool connection specified by the user

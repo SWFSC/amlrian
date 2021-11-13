@@ -10,7 +10,7 @@
 #'
 #' @import shiny
 #'
-#' @importFrom dplyr %>% select
+#' @importFrom dplyr %>% case_when if_else select
 #' @importFrom DT DTOutput renderDT
 #' @importFrom ggplot2 ggsave
 #' @importFrom pool dbGetQuery
