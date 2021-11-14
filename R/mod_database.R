@@ -88,7 +88,12 @@ mod_database_server <- function(id, db.name.prod, db.name.test,
           input$db_name %in% c("remote_test", "local_test") ~ db.name.test,
           TRUE ~ NA_character_
         )
-        vals.db$system.user <- pool::dbGetQuery(req(vals.db$pool), "SELECT SYSTEM_USER")
+
+        vals.db$system.user <- if (isTruthy(vals.db$pool)) {
+          pool::dbGetQuery(req(vals.db$pool), "SELECT SYSTEM_USER")
+        } else {
+          NULL
+        }
       })
 
 

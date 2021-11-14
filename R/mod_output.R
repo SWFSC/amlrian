@@ -15,7 +15,7 @@ mod_output_ui <- function(id, ...) {
   tagList(
     fluidRow(
       box(
-        status = "primary", width = 12,
+        status = "primary", width = 12, collapsible = TRUE,
         fluidRow(
           column(
             width = 10,
@@ -24,15 +24,17 @@ mod_output_ui <- function(id, ...) {
           ),
           column(
             width = 2,
-            numericInput(ns("plot_height"), tags$h5("Plot height (pixels)"), value = 450, min = 0, step = 50, width = "200px"),
-            numericInput(ns("plot_width"), tags$h5("Plot width (pixels)"), value = 900, min = 0, step = 50, width = "200px"),
+            numericInput(ns("plot_height"), tags$h5("Plot height (pixels)"),
+                         value = 450, min = 0, step = 50, width = "200px"),
+            numericInput(ns("plot_width"), tags$h5("Plot width (pixels)"),
+                         value = 900, min = 0, step = 50, width = "200px"),
             tags$br(),
             downloadButton(ns("plot_download"), "Save plot as PNG")
           )
         )
       ),
       box(
-        status = "primary", width = 12,
+        status = "primary", width = 12, collapsible = TRUE,
         # tags$h5("Note that all rows with only counts of zero for the selected columns (may) have been filtered out.",
         #         "See below the table to specify the column(s) to include in the output table/CSV file."),
         # tags$br(),
