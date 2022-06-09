@@ -6,20 +6,16 @@
 \alias{mod_database_server}
 \title{Database module for AMLR shiny apps}
 \usage{
-mod_database_ui(id, db.name.prod, db.name.test, remote_valid, col.width = 5)
-
-mod_database_server(
+mod_database_ui(
   id,
   db.name.prod,
   db.name.test,
-  pool.remote.prod,
-  pool.remote.test,
-  pool.local.prod,
-  pool.local.test,
-  db.driver,
-  db.server.remote,
-  db.server.local
+  remote.valid,
+  col.width = 5,
+  db.remote.default = "remote_prod"
 )
+
+mod_database_server(id, pool.remote.prod, pool.remote.test, db.driver)
 }
 \arguments{
 \item{id}{character used to specify namespace, see \code{shiny::\link[shiny]{NS}}}
@@ -28,32 +24,36 @@ mod_database_server(
 
 \item{db.name.test}{character; name of test database on SWFSC server}
 
-\item{remote_valid}{logical; indicates if the remote (TRUE) or local (FALSE)
+\item{remote.valid}{logical; indicates if the remote (TRUE) or local (FALSE)
 database connection should be the default}
 
 \item{col.width}{integer; column width of column of UI widgets}
 
+\item{db.remote.default}{character; default remote database to connect to.
+To allow developer to specify test database as initial db}
+
 \item{pool.remote.prod}{output of a \code{\link[pool]{dbPool}} call.
-A DBI database connection pool connected to the remote PRODUCTION database, e.g. '***REMOVED***'}
+A DBI database connection pool connected to the remote PRODUCTION database,
+e.g. '***REMOVED***'}
 
 \item{pool.remote.test}{output of a \code{\link[pool]{dbPool}} call.
-A DBI database connection pool connected to the remote TEST database, e.g. '***REMOVED***_Test'}
+A DBI database connection pool connected to the remote TEST database,
+e.g. '***REMOVED***_Test'}
 
-\item{pool.local.prod}{output of a \code{\link[pool]{dbPool}} call.
-A DBI database connection pool connected to the local PRODUCTION database, e.g. '***REMOVED***'}
-
-\item{pool.local.test}{output of a \code{\link[pool]{dbPool}} call.
-A DBI database connection pool connected to the local TEST database, e.g. '***REMOVED***_Test'}
-
-\item{db.driver}{character; name of driver used to connect to remote database}
-
-\item{db.server.remote}{character; name of server where remote database is hosted}
-
-\item{db.server.local}{character; name of server where local database is hosted}
+\item{db.driver}{character; name of driver used to connect to the databases}
 }
 \value{
-\code{mod_database_server} returns a reactive of the pool connection specified by the user
+\code{mod_database_server} returns a reactive of the pool connection
+specified by the user
 }
 \description{
 Database module for AMLR shiny apps
+}
+\details{
+This module allows users to connect to the database of their choice:
+the provided production database, the provided dev (test) database,
+or a database specified by the user (e.g., a local database).
+
+If the user specifies their own database,
+then the pool object is created and returned by this module.
 }

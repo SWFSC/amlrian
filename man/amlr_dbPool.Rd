@@ -6,22 +6,28 @@
 \usage{
 amlr_dbPool(
   Database,
-  Driver = "SQL Server",
+  Driver = "ODBC Driver 18 for SQL Server",
   Server = "swc-***REMOVED***-s",
+  Trusted_Connection = "Yes",
+  Encrypt = "Optional",
   idleTimeout = 3600000,
   ...
 )
 }
 \arguments{
-\item{Database}{character; see \code{\link[pool]{dbPool}}}
+\item{Database}{character; database name}
 
-\item{Driver}{character; default is 'SQL Server'. See \code{\link[pool]{dbPool}}}
+\item{Driver}{character; default is 'ODBC Driver 18 for SQL Server'}
 
-\item{Server}{character; default is 'swc-***REMOVED***-s'. See \code{\link[pool]{dbPool}}}
+\item{Server}{character; default is 'swc-***REMOVED***-s'}
 
-\item{idleTimeout}{integer; default is one hour. See \code{\link[pool]{dbPool}}}
+\item{Trusted_Connection}{character; default is 'Yes'}
 
-\item{...}{additional arguments passed to \link[pool]{dbPool})}
+\item{Encrypt}{character; default is 'Optional'}
+
+\item{idleTimeout}{integer; default is one hour}
+
+\item{...}{additional arguments passed to \link[pool]{dbPool}}
 }
 \value{
 Output of \code{\link[base]{try}(\link[pool]{dbPool})} call
@@ -30,7 +36,8 @@ Output of \code{\link[base]{try}(\link[pool]{dbPool})} call
 Wrapper with standard, AMLR defaults for connecting to an AMLR database
 }
 \details{
-Wrapper for a call to \link[pool]{dbPool})
+Wrapper for a call to \code{\link[pool]{dbPool}}.
+See these docs for more information about these arguments
 }
 \examples{
 \dontrun{

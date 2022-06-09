@@ -7,22 +7,25 @@
 #' @param id character used to specify namespace, see \code{shiny::\link[shiny]{NS}}
 #' @param db.name.prod character; name of production database on SWFSC server
 #' @param db.name.test character; name of test database on SWFSC server
-#' @param remote_valid logical; indicates if the remote (TRUE) or local (FALSE)
+#' @param remote.valid logical; indicates if the remote (TRUE) or local (FALSE)
 #'   database connection should be the default
 #' @param col.width integer; column width of column of UI widgets
+#' @param db.remote.default character; default remote database to connect to.
+#'   To allow developer to specify test database as initial db
 #'
 #' @export
-mod_database_ui <- function(id, db.name.prod, db.name.test, remote_valid,
-                            col.width = 5) {
+mod_database_ui <- function(id, db.name.prod, db.name.test, remote.valid,
+                            col.width = 5, db.remote.default = "remote_prod") {
   ns <- NS(id)
 
-  choices.list <- list("remote_prod", "remote_test", "local_prod", "local_test")
+  choices.list <- list("remote_prod", "remote_test", "other")
+  stopifnot(db.remote.default %in% choices.list)
   names(choices.list) <- c(
-    paste(db.name.prod, "***REMOVED***", sep = " - "),
-    paste(db.name.test, "***REMOVED***", sep = " - "),
-    paste(db.name.prod, "local", sep = " - "),
-    paste(db.name.test, "local", sep = " - ")
+    paste(db.name.prod, "- ***REMOVED***"),
+    paste(db.name.test, "- ***REMOVED***"),
+    "other"
   )
+  local.server <- paste0(Sys.info()[["nodename"]], "\\SQLEXPRESS")
 
   # assemble UI elements
   tagList(
@@ -31,9 +34,20 @@ mod_database_ui <- function(id, db.name.prod, db.name.test, remote_valid,
       solidHeader = FALSE, width = col.width, collapsible = TRUE,
       tableOutput(ns("pool_db_conn")),
       tags$br(),
-      selectInput(ns("db_name"), tags$h5("Select database connection"), width = "300px",
-                  choices = choices.list,
-                  selected = if_else(remote_valid, "remote_prod", "local_prod"))
+      radioButtons(ns("db_name"), tags$h5("Select database connection"),
+                   choices = choices.list,
+                   selected = if_else(remote.valid, db.remote.default, "other")),
+      conditionalPanel(
+        condition = "input.db_name == 'other'", ns = ns,
+        box(
+          width = 12,
+          textInput(ns("db_other_server"), tags$h5("SQL Server Name"),
+                    value = local.server),
+          textInput(ns("db_other_database"), tags$h5("SQL Server Database"),
+                    value = db.name.prod),
+          actionButton(ns("db_other_action"), "Connect to database")
+        )
+      )
     )
   )
 }
@@ -41,79 +55,86 @@ mod_database_ui <- function(id, db.name.prod, db.name.test, remote_valid,
 #' @name mod_database
 #'
 #' @param pool.remote.prod output of a \code{\link[pool]{dbPool}} call.
-#'   A DBI database connection pool connected to the remote PRODUCTION database, e.g. '***REMOVED***'
+#'   A DBI database connection pool connected to the remote PRODUCTION database,
+#'   e.g. '***REMOVED***'
 #' @param pool.remote.test output of a \code{\link[pool]{dbPool}} call.
-#'   A DBI database connection pool connected to the remote TEST database, e.g. '***REMOVED***_Test'
-#' @param pool.local.prod output of a \code{\link[pool]{dbPool}} call.
-#'   A DBI database connection pool connected to the local PRODUCTION database, e.g. '***REMOVED***'
-#' @param pool.local.test output of a \code{\link[pool]{dbPool}} call.
-#'   A DBI database connection pool connected to the local TEST database, e.g. '***REMOVED***_Test'
-#' @param db.driver character; name of driver used to connect to remote database
-#' @param db.server.remote character; name of server where remote database is hosted
-#' @param db.server.local character; name of server where local database is hosted
+#'   A DBI database connection pool connected to the remote TEST database,
+#'   e.g. '***REMOVED***_Test'
+#' @param db.driver character; name of driver used to connect to the databases
 #'
-#' @returns \code{mod_database_server} returns a reactive of the pool connection specified by the user
+#' @details
+#' This module allows users to connect to the database of their choice:
+#' the provided production database, the provided dev (test) database,
+#' or a database specified by the user (e.g., a local database).
+#'
+#' If the user specifies their own database,
+#' then the pool object is created and returned by this module.
+#'
+#' @returns
+#' \code{mod_database_server} returns a reactive of the pool connection
+#' specified by the user
 #'
 #' @export
-mod_database_server <- function(id, db.name.prod, db.name.test,
-                                pool.remote.prod, pool.remote.test,
-                                pool.local.prod, pool.local.test,
-                                db.driver, db.server.remote, db.server.local) {
+mod_database_server <- function(id, pool.remote.prod, pool.remote.test, db.driver) {
   moduleServer(
     id,
     function(input, output, session) {
       vals.db <- reactiveValues(
         pool = NULL,
+        server.name = "",
         db.name = "",
-        system.user = ""
+        system.user = "",
+        other = FALSE
       )
 
       #----------------------------------------------------------------------------
       # Which database to use?
-      observeEvent(input$db_name, {
+      db_listen <- reactive({
+        list(input$db_name, input$db_other_action)
+      })
+
+      observeEvent(db_listen(), {
+        if (isTruthy(vals.db$pool) & vals.db$other) {
+          if (pool::dbIsValid(vals.db$pool)) pool::poolClose(vals.db$pool)
+        }
+
         vals.db$pool <- if (input$db_name == "remote_prod") {
           pool.remote.prod
         } else if (input$db_name == "remote_test") {
           pool.remote.test
-        } else if (input$db_name == "local_prod") {
-          pool.local.prod
-        } else if (input$db_name == "local_test") {
-          pool.local.test
+        } else if (input$db_name == "other") {
+          amlr_dbPool(Driver = db.driver, Server = input$db_other_server,
+                      Database = input$db_other_database)
         } else {
           NULL
         }
 
-        vals.db$db.name <- case_when(
-          input$db_name %in% c("remote_prod", "local_prod") ~ db.name.prod,
-          input$db_name %in% c("remote_test", "local_test") ~ db.name.test,
-          TRUE ~ NA_character_
-        )
-
-        vals.db$system.user <- if (isTruthy(vals.db$pool)) {
-          pool::dbGetQuery(req(vals.db$pool), "SELECT SYSTEM_USER")
-        } else {
-          NULL
-        }
+        vals.db$other <- input$db_name == "other"
       })
 
 
-      # Info about db connection
+      # Get and print info about db connection
       output$pool_db_conn <- renderTable({
         validate(
           need(inherits(vals.db$pool, "Pool"),
-               paste("The AMLR Shiny app was not able to connect to the specified database -",
-                     "are you connected to VPN, or have you selected the correct local database?"))
+               paste("Tamatoa was unable to connect to the specified database.",
+                     "Are you connected to VPN, and/or have you",
+                     "specified the correct server and database names?"))
         )
 
-        server.curr <- case_when(
-          input$db_name %in% c("remote_prod", "remote_test") ~ db.server.remote,
-          input$db_name %in% c("local_prod", "local_test") ~ db.server.local,
-          TRUE ~ NA_character_
+        db.query <- pool::dbGetQuery(
+          req(vals.db$pool), "SELECT @@servername, DB_NAME(), SYSTEM_USER"
         )
+
+        vals.db$server.name <- db.query[[1]]
+        vals.db$db.name <- db.query[[2]]
+        vals.db$system.user <- db.query[[3]]
 
         data.frame(
-          Label = c("Driver", "Server", "Username", "Database name"),
-          Value = unlist(c(db.driver, server.curr, vals.db$system.user, vals.db$db.name))
+          Label = c("Driver", "Server", "Database", "User"),
+          Value = unlist(
+            c(db.driver, vals.db$server.name, vals.db$db.name, vals.db$system.user)
+          )
         )
       })
 
