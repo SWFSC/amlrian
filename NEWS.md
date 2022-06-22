@@ -1,4 +1,4 @@
-# amlrDatabases 0.1.0
+# amlrDatabases 0.2.0
 
 * Added 'Encrypt' as an argument to `amlr_dbPool` and changed teh default driver to ODBC Driver 18 for SQL Server
 
