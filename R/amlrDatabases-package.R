@@ -14,6 +14,7 @@
 #' @importFrom DT DTOutput renderDT
 #' @importFrom ggplot2 ggsave
 #' @importFrom pool dbGetQuery
+#' @importFrom purrr compact
 #' @importFrom shinydashboard box
 #' @importFrom utils write.csv
 #'

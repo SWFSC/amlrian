@@ -23,7 +23,7 @@ mod_database_ui <- function(id, db.name.prod, db.name.test, remote.valid,
   names(choices.list) <- c(
     paste(db.name.prod, "- ***REMOVED***"),
     paste(db.name.test, "- ***REMOVED***"),
-    "other"
+    "Other"
   )
   local.server <- paste0(Sys.info()[["nodename"]], "\\SQLEXPRESS")
 
@@ -34,18 +34,32 @@ mod_database_ui <- function(id, db.name.prod, db.name.test, remote.valid,
       solidHeader = FALSE, width = col.width, collapsible = TRUE,
       tableOutput(ns("pool_db_conn")),
       tags$br(),
-      radioButtons(ns("db_name"), tags$h5("Select database connection"),
+      radioButtons(ns("db_conn"), tags$h5("Select database connection"),
                    choices = choices.list,
                    selected = if_else(remote.valid, db.remote.default, "other")),
       conditionalPanel(
-        condition = "input.db_name == 'other'", ns = ns,
+        condition = "input.db_conn == 'other'", ns = ns,
         box(
           width = 12,
           textInput(ns("db_other_server"), tags$h5("SQL Server Name"),
                     value = local.server),
           textInput(ns("db_other_database"), tags$h5("SQL Server Database"),
                     value = db.name.prod),
-          actionButton(ns("db_other_action"), "Connect to database")
+          checkboxInput(ns("db_other_port_check"), "Specify port number", value = FALSE),
+          conditionalPanel(
+            condition = "input.db_other_port_check == true", ns = ns,
+            numericInput(ns("db_other_port"), tags$h5("Port number"), value = ***REMOVED***)
+          ),
+          radioButtons(ns("db_other_conn"), tags$h5("Connection type"),
+                       choices = list("Trusted connection" = "trusted",
+                                      "User login" = "login"),
+                       selected = "trusted"),
+          conditionalPanel(
+            condition = "input.db_other_conn == 'login'", ns = ns,
+            textInput(ns("db_other_uid"), tags$h5("User"), value = "sa"),
+            textInput(ns("db_other_pwd"), tags$h5("Password"))
+          ),
+          actionButton(ns("db_other_action"), "Connect to other database")
         )
       )
     )
@@ -71,8 +85,7 @@ mod_database_ui <- function(id, db.name.prod, db.name.test, remote.valid,
 #' then the pool object is created and returned by this module.
 #'
 #' @returns
-#' \code{mod_database_server} returns a reactive of the pool connection
-#' specified by the user
+#' Returns a reactive of the pool connection specified by the user
 #'
 #' @export
 mod_database_server <- function(id, pool.remote.prod, pool.remote.test, db.driver) {
@@ -81,59 +94,87 @@ mod_database_server <- function(id, pool.remote.prod, pool.remote.test, db.drive
     function(input, output, session) {
       vals.db <- reactiveValues(
         pool = NULL,
-        server.name = "",
-        db.name = "",
-        system.user = "",
         other = FALSE
       )
 
-      #----------------------------------------------------------------------------
-      # Which database to use?
-      db_listen <- reactive({
-        list(input$db_name, input$db_other_action)
-      })
+      encrypt.driver <- "ODBC Driver 18 for SQL Server"
+      trusted.connection <- if_else(db.driver == encrypt.driver, "Yes", "TRUE")
+      trusted.connection.no <- if_else(db.driver == encrypt.driver, "No", "FALSE")
 
-      observeEvent(db_listen(), {
+
+      #----------------------------------------------------------------------------
+      # Connect to database
+
+      db_other_close <- function() {
         if (isTruthy(vals.db$pool) & vals.db$other) {
           if (pool::dbIsValid(vals.db$pool)) pool::poolClose(vals.db$pool)
         }
+      }
 
-        vals.db$pool <- if (input$db_name == "remote_prod") {
+      ### Default databases
+      observeEvent(input$db_conn, {
+        req(input$db_conn != "other")
+        db_other_close()
+
+        vals.db$other <- FALSE
+        vals.db$pool <- if (input$db_conn == "remote_prod") {
           pool.remote.prod
-        } else if (input$db_name == "remote_test") {
+        } else if (input$db_conn == "remote_test") {
           pool.remote.test
-        } else if (input$db_name == "other") {
-          amlr_dbPool(Driver = db.driver, Server = input$db_other_server,
-                      Database = input$db_other_database)
         } else {
           NULL
         }
+      })
 
-        vals.db$other <- input$db_name == "other"
+      ### Other database, on button click
+      observeEvent(input$db_other_action, {
+        db_other_close()
+
+        db.args.toadd <- if (input$db_other_conn == "trusted") {
+          list(Trusted_Connection = trusted.connection)
+        } else if (input$db_other_conn == "login") {
+          list(uid = input$db_other_uid, pwd = input$db_other_pwd,
+               Trusted_Connection = trusted.connection.no)
+        } else {
+          stop("invalid input$db_other_conn value")
+        }
+
+        db.args.list <- c(
+          list(
+            Driver = db.driver,
+            Server = input$db_other_server,
+            Database = input$db_other_database,
+            port = if (input$db_other_port_check) input$db_other_port else NULL,
+            Encrypt = if (db.driver == encrypt.driver) "Optional" else NULL
+          ),
+          db.args.toadd
+        )
+
+        vals.db$other <- TRUE
+        vals.db$pool <- do.call(amlr_dbPool, purrr::compact(db.args.list))
       })
 
 
-      # Get and print info about db connection
+      #----------------------------------------------------------------------------
+      # Outputs
+
+      ### Get and print info about db connection
       output$pool_db_conn <- renderTable({
         validate(
           need(inherits(vals.db$pool, "Pool"),
-               paste("Tamatoa was unable to connect to the specified database.",
+               paste("The Shiny app was unable to connect to the specified database.",
                      "Are you connected to VPN, and/or have you",
-                     "specified the correct server and database names?"))
+                     "specified the correct connection arguments?"))
         )
 
         db.query <- pool::dbGetQuery(
           req(vals.db$pool), "SELECT @@servername, DB_NAME(), SYSTEM_USER"
         )
 
-        vals.db$server.name <- db.query[[1]]
-        vals.db$db.name <- db.query[[2]]
-        vals.db$system.user <- db.query[[3]]
-
         data.frame(
           Label = c("Driver", "Server", "Database", "User"),
           Value = unlist(
-            c(db.driver, vals.db$server.name, vals.db$db.name, vals.db$system.user)
+            c(db.driver, db.query[[1]], db.query[[2]], db.query[[3]])
           )
         )
       })

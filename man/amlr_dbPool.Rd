@@ -2,7 +2,7 @@
 % Please edit documentation in R/amlr_dbPool.R
 \name{amlr_dbPool}
 \alias{amlr_dbPool}
-\title{Wrapper to connect to an AMLR database}
+\title{Wrapper with US AMLR defaults around dbPool}
 \usage{
 amlr_dbPool(
   Database,
@@ -11,11 +11,12 @@ amlr_dbPool(
   Trusted_Connection = "Yes",
   Encrypt = "Optional",
   idleTimeout = 3600000,
+  silent = TRUE,
   ...
 )
 }
 \arguments{
-\item{Database}{character; database name}
+\item{Database}{character; name of database to connect to}
 
 \item{Driver}{character; default is 'ODBC Driver 18 for SQL Server'}
 
@@ -27,24 +28,39 @@ amlr_dbPool(
 
 \item{idleTimeout}{integer; default is one hour}
 
+\item{silent}{logical; default is \code{TRUE}.
+Passed to silent argument of \code{\link[base]{try}}}
+
 \item{...}{additional arguments passed to \link[pool]{dbPool}}
 }
 \value{
-Output of \code{\link[base]{try}(\link[pool]{dbPool})} call
+Output of a \code{\link[base]{try}(\link[pool]{dbPool}(..), silent = TRUE)}
 }
 \description{
-Wrapper with standard, AMLR defaults for connecting to an AMLR database
+Wrapper around dbPool with standard, US AMLR defaults for connecting to
+an AMLR database with an ODBC driver
 }
 \details{
-Wrapper for a call to \code{\link[pool]{dbPool}}.
-See these docs for more information about these arguments
+Wrapper for a call to \code{\link[pool]{dbPool}},
+with an \code{\link[odbc]{odbc}} driver passed to \code{drv}.
+See \code{\link[pool]{dbPool}} for more information about these arguments.
+
+Arguments that are \code{NULL} are ignored and not passed to
+\code{\link[pool]{dbPool}}. This allows you to, for instance pass a
+username and password rather than Trusted_Connection string (see examples).
 }
 \examples{
 \dontrun{
 amlr_dbPool("***REMOVED***")
+
+# Connect using username and password
+amlr_dbPool(
+  "***REMOVED***",
+  Trusted_Connection = NULL, uid = "sa", pwd = "SecurePwd"
+)
 }
 
 }
 \seealso{
-https://github.com/rstudio/pool
+\url{https://github.com/rstudio/pool}
 }

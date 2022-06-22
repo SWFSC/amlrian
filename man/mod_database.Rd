@@ -43,8 +43,7 @@ e.g. '***REMOVED***_Test'}
 \item{db.driver}{character; name of driver used to connect to the databases}
 }
 \value{
-\code{mod_database_server} returns a reactive of the pool connection
-specified by the user
+Returns a reactive of the pool connection specified by the user
 }
 \description{
 Database module for AMLR shiny apps

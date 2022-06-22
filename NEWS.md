@@ -1,3 +1,10 @@
+# amlrDatabases 0.3.0 (in development)
+
+* Added a basic Shiny app for trying the shiny modules in this package
+
+* Update `mod_database` to allow user to specify other database with user/pwd/port login
+
+
 # amlrDatabases 0.2.0
 
 * Added 'Encrypt' as an argument to `amlr_dbPool` and changed teh default driver to ODBC Driver 18 for SQL Server

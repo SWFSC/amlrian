@@ -1,16 +1,17 @@
 Package: amlrDatabases
 Title: General Functions for AMLR Database Packages
-Version: 0.2.0
+Version: 0.3.0.9000
 Authors@R: 
         person("Sam", "Woodman", email = "sam.woodman@noaa.gov", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-6071-8186"))
 Description: A collection of functions, especially for Shiny apps connected to AMLR databases, used by other AMLR packages. 
-Depends: R (>= 3.5.0)
+Depends: R (>= 4.0.0)
 Imports: 
     dplyr,
     DT, 
     ggplot2, 
     odbc, 
     pool, 
+    purrr, 
     shiny,
     shinydashboard
 License: CC0
