@@ -1,8 +1,10 @@
-# amlrDatabases 0.3.0 (in development)
+# amlrDatabases 0.3.0
 
 * Added a basic Shiny app for trying the shiny modules in this package
 
 * Update `mod_database` to allow user to specify other database with user/pwd/port login
+
+* `mod_output` now takes parent's session object as input, rather than ID, for more robust way of generating output IDs and defualt download names
 
 
 # amlrDatabases 0.2.0

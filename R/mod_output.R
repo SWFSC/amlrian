@@ -27,7 +27,7 @@ mod_output_ui <- function(id, ...) {
             numericInput(ns("plot_height"), tags$h5("Plot height (pixels)"),
                          value = 450, min = 0, step = 50, width = "200px"),
             numericInput(ns("plot_width"), tags$h5("Plot width (pixels)"),
-                         value = 900, min = 0, step = 50, width = "200px"),
+                         value = 800, min = 0, step = 50, width = "200px"),
             tags$br(),
             downloadButton(ns("plot_download"), "Save plot as PNG")
           )
@@ -50,7 +50,8 @@ mod_output_ui <- function(id, ...) {
 
 #' @name mod_output
 #'
-#' @param id.parent parent module ID; used to generate default filename and get plot window dimensions
+#' @param parent session object from the parent code that is calling this module.
+#'   Used to get parent ID and access session$clientData
 #' @param tbl.reac reactive; data frame to be displayed in the table
 #' @param plot.reac reactive; \code{\link[ggplot2]{ggplot}} object to be plotted
 #' @param plot.res numeric; plot resolution, passed to \code{\link[shiny]{renderPlot}} and
@@ -59,7 +60,7 @@ mod_output_ui <- function(id, ...) {
 #' @returns Nothing
 #'
 #' @export
-mod_output_server <- function(id, id.parent, tbl.reac, plot.reac, plot.res = 96) {
+mod_output_server <- function(id, parent, tbl.reac, plot.reac, plot.res = 96) {
   stopifnot(
     is.reactive(tbl.reac),
     is.reactive(plot.reac),
@@ -70,6 +71,9 @@ mod_output_server <- function(id, id.parent, tbl.reac, plot.reac, plot.res = 96)
   moduleServer(
     id,
     function(input, output, session) {
+      parent.id <- parent$ns(NULL)
+      parent.id.str <- if (length(parent.id) == 0) "" else paste0(parent.id, "-")
+
       #------------------------------------------------------------------------
       # Columns to display in table
       output$tbl_cols_uiOut_selectize <- renderUI({
@@ -98,7 +102,7 @@ mod_output_server <- function(id, id.parent, tbl.reac, plot.reac, plot.res = 96)
       # Download table
       output$tbl_download <- downloadHandler(
         filename = function() {
-          paste0(id.parent, "_table.csv")
+          paste0(parent.id.str, "table.csv")
         },
         content = function(file) {
           tbl.out <- tbl.reac() %>% select(req(input$tbl_cols))
@@ -130,11 +134,12 @@ mod_output_server <- function(id, id.parent, tbl.reac, plot.reac, plot.res = 96)
       # Download plot
       output$plot_download <- downloadHandler(
         filename = function() {
-          paste0(id.parent, "_plot.png")
+          paste0(parent.id.str, "plot.png")
         },
         content = function(file) {
-          x <- req(session$clientData[[paste0("output_", id.parent, "-", id, "-plot_width")]]) / plot.res
-          y <- req(session$clientData[[paste0("output_", id.parent, "-", id, "-plot_height")]]) / plot.res
+          plot.id <- paste0("output_", parent$ns(id), "-plot")
+          x <- req(session$clientData[[paste0(plot.id, "_width")]]) / plot.res
+          y <- req(session$clientData[[paste0(plot.id, "_height")]]) / plot.res
 
           # NOTE: if the user needs control over the resolution,
           #   must use png() device directly per https://github.com/tidyverse/ggplot2/issues/2276
