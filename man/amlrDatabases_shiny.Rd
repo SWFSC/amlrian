@@ -4,19 +4,16 @@
 \alias{amlrDatabases_shiny}
 \title{Open the amlrDatabases Shiny app}
 \usage{
-amlrDatabases_shiny(launch.browser = TRUE)
+amlrDatabases_shiny(...)
 }
 \arguments{
-\item{launch.browser}{Logical with default of \code{TRUE};
-passed to \code{launch.browser} argument of \code{\link[shiny]{runApp}}}
+\item{...}{arguments passed as a list to the \code{options} argument
+of \code{\link[shiny]{runApp}}}
 }
 \description{
-Open the amlrDatabases Shiny app (for testing)
+Open the amlrDatabases Shiny app
 }
 \examples{
-if (interactive()) tamatoa(launch.browser = TRUE)
+if (interactive()) shiny_app(launch.browser = TRUE)
 
-}
-\seealso{
-\url{https://www.fisheries.noaa.gov/about/antarctic-ecosystem-research-division-southwest-fisheries-science-center}
 }

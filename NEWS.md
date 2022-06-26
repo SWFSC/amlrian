@@ -1,3 +1,8 @@
+# amlrDatabases 0.3.1
+
+* Move full shiny app to R folder
+
+
 # amlrDatabases 0.3.0
 
 * Added a basic Shiny app for trying the shiny modules in this package

@@ -1,21 +1,22 @@
-#' amlrDatabases: General functions used by other AMLR packages
+#' General functions used by other US AMLR packages
 #'
-#' General functions used by other AMLR packages
+#' General functions used by other US AMLR packages
 #'
 #' @name amlrDatabases-package
 #' @aliases amlrDatabases
 #' @docType package
-#' @title General Functions for AMLR Database Packages
+#' @title General Functions for US AMLR Database Packages
 #' @author Sam Woodman \email{sam.woodman@@noaa.gov}
 #'
 #' @import shiny
 #'
-#' @importFrom dplyr %>% case_when if_else select
+#' @importFrom dplyr %>% case_when if_else select tbl collect
 #' @importFrom DT DTOutput renderDT
-#' @importFrom ggplot2 ggsave
-#' @importFrom pool dbGetQuery
+#' @importFrom ggplot2 ggplot aes geom_point ggtitle ggsave
+#' @importFrom pool dbGetQuery dbIsValid poolClose
 #' @importFrom purrr compact
-#' @importFrom shinydashboard box
+#' @importFrom shinydashboard dashboardPage dashboardHeader
+#'   dashboardSidebar sidebarMenu menuItem dashboardBody tabItems tabItem box
 #' @importFrom utils write.csv
 #'
 #' @keywords package

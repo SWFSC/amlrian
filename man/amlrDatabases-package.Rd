@@ -4,12 +4,12 @@
 \name{amlrDatabases-package}
 \alias{amlrDatabases-package}
 \alias{amlrDatabases}
-\title{General Functions for AMLR Database Packages}
+\title{General Functions for US AMLR Database Packages}
 \description{
-amlrDatabases: General functions used by other AMLR packages
+General functions used by other US AMLR packages
 }
 \details{
-General functions used by other AMLR packages
+General functions used by other US AMLR packages
 }
 \author{
 Sam Woodman \email{sam.woodman@noaa.gov}
