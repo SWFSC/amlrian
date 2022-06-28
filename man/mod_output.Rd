@@ -11,9 +11,10 @@ mod_output_ui(id, ...)
 mod_output_server(id, parent, tbl.reac, plot.reac, plot.res = 96)
 }
 \arguments{
-\item{id}{character used to specify namespace, see \code{shiny::\link[shiny]{NS}}}
+\item{id}{module namespace, see \code{shiny::\link[shiny]{NS}}}
 
-\item{...}{UI elements to be displayed below the plot and above the 'download plot'save plot' button}
+\item{...}{UI elements to be displayed below the plot and
+above the 'Save plot' button}
 
 \item{parent}{session object from the parent code that is calling this module.
 Used to get parent ID and access session$clientData}

@@ -29,10 +29,12 @@ amlrDatabases_shiny <- function(...) {
   }
 
   onStop(function() {
+    print("onstop start")
     if (isTruthy(pool.remote.prod))
       if (dbIsValid(pool.remote.prod)) poolClose(pool.remote.prod)
     if (isTruthy(pool.remote.test))
       if (dbIsValid(pool.remote.test)) poolClose(pool.remote.test)
+    print("onstop stop")
   })
 
 
@@ -60,9 +62,10 @@ amlrDatabases_shiny <- function(...) {
       tabItems(
         tabItem(
           "tab_database",
-          mod_database_ui("db", db.name.prod, db.name.test, remote.prod.valid,
-                          db.remote.default = "remote_test",
-                          col.width = 12)
+          # mod_database_ui("db", db.name.prod, db.name.test, remote.prod.valid,
+          #                 db.remote.default = "remote_test",
+          #                 col.width = 12)
+          mod_database_ui("db", col.width = 12)
         ),
         tabItem(
           "tab_output",
@@ -93,19 +96,23 @@ amlrDatabases_shiny <- function(...) {
     session$onSessionEnded(function() {
       # Close current pool object. Needed here in case working off 'other' db
       isolate({
+        print("session start")
         if (inherits(db.pool(), "Pool")) {
           if (dbIsValid(db.pool())) {
             poolClose(db.pool())
           }
         }
+        print("session end")
       })
       stopApp(returnValue = "Shiny app was closed")
     })
 
     #--------------------------------------------------------
-    db.pool <- mod_database_server(
-      "db", pool.remote.prod, pool.remote.test, db.driver
+    pool.list <- list(
+      `***REMOVED*** - ***REMOVED***` = pool.remote.prod,
+      `***REMOVED***_Test - ***REMOVED***` = pool.remote.test
     )
+    db.pool <- mod_database_server("db", pool.list, db.driver)
 
 
     #--------------------------------------------------------

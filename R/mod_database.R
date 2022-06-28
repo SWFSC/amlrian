@@ -4,27 +4,13 @@
 #'
 #' @name mod_database
 #'
-#' @param id character used to specify namespace, see \code{shiny::\link[shiny]{NS}}
-#' @param db.name.prod character; name of production database on SWFSC server
-#' @param db.name.test character; name of test database on SWFSC server
-#' @param remote.valid logical; indicates if the remote (TRUE) or local (FALSE)
-#'   database connection should be the default
+#' @param id module namespace, see \code{shiny::\link[shiny]{NS}}
 #' @param col.width integer; column width of column of UI widgets
-#' @param db.remote.default character; default remote database to connect to.
-#'   To allow developer to specify test database as initial db
 #'
 #' @export
-mod_database_ui <- function(id, db.name.prod, db.name.test, remote.valid,
-                            col.width = 5, db.remote.default = "remote_prod") {
+mod_database_ui <- function(id, col.width = 5) {
   ns <- NS(id)
 
-  choices.list <- list("remote_prod", "remote_test", "other")
-  stopifnot(db.remote.default %in% choices.list)
-  names(choices.list) <- c(
-    paste(db.name.prod, "- ***REMOVED***"),
-    paste(db.name.test, "- ***REMOVED***"),
-    "Other"
-  )
   local.server <- paste0(Sys.info()[["nodename"]], "\\SQLEXPRESS")
 
   # assemble UI elements
@@ -34,17 +20,14 @@ mod_database_ui <- function(id, db.name.prod, db.name.test, remote.valid,
       solidHeader = FALSE, width = col.width, collapsible = TRUE,
       tableOutput(ns("pool_db_conn")),
       tags$br(),
-      radioButtons(ns("db_conn"), tags$h5("Select database connection"),
-                   choices = choices.list,
-                   selected = if_else(remote.valid, db.remote.default, "other")),
+      uiOutput(ns("db_conn_uiOut")),
       conditionalPanel(
         condition = "input.db_conn == 'other'", ns = ns,
         box(
           width = 12,
           textInput(ns("db_other_server"), tags$h5("SQL Server Name"),
                     value = local.server),
-          textInput(ns("db_other_database"), tags$h5("SQL Server Database"),
-                    value = db.name.prod),
+          textInput(ns("db_other_database"), tags$h5("SQL Server Database")),
           checkboxInput(ns("db_other_port_check"), "Specify port number", value = FALSE),
           conditionalPanel(
             condition = "input.db_other_port_check == true", ns = ns,
@@ -68,27 +51,27 @@ mod_database_ui <- function(id, db.name.prod, db.name.test, remote.valid,
 
 #' @name mod_database
 #'
-#' @param pool.remote.prod output of a \code{\link[pool]{dbPool}} call.
-#'   A DBI database connection pool connected to the remote PRODUCTION database,
-#'   e.g. '***REMOVED***'
-#' @param pool.remote.test output of a \code{\link[pool]{dbPool}} call.
-#'   A DBI database connection pool connected to the remote TEST database,
-#'   e.g. '***REMOVED***_Test'
-#' @param db.driver character; name of driver used to connect to the databases
+#' @param pool.list a (named) list of pool objects created by \code{\link[pool]{dbPool}}.
+#'   The names of the objects in this list will appear as
+#'   'database connection' radioButton options.
+#'   The default is an empty list
+#' @param db.driver character; name of driver used to connect to the databases.
+#'   Default is 'ODBC Driver 18 for SQL Server'
 #'
 #' @details
 #' This module allows users to connect to the database of their choice:
-#' the provided production database, the provided dev (test) database,
-#' or a database specified by the user (e.g., a local database).
+#' any already-created connections
+#' (e.g., to the ***REMOVED*** production database on the SWC server)
+#' or a database specified by the user.
 #'
 #' If the user specifies their own database,
-#' then the pool object is created and returned by this module.
+#' then this module creates the pool object.
 #'
 #' @returns
 #' Returns a reactive of the pool connection specified by the user
 #'
 #' @export
-mod_database_server <- function(id, pool.remote.prod, pool.remote.test, db.driver) {
+mod_database_server <- function(id, pool.list = list(), db.driver) {
   moduleServer(
     id,
     function(input, output, session) {
@@ -105,11 +88,26 @@ mod_database_server <- function(id, pool.remote.prod, pool.remote.test, db.drive
       #----------------------------------------------------------------------------
       # Connect to database
 
+      ### Close other database
       db_other_close <- function() {
-        if (isTruthy(vals.db$pool) & vals.db$other) {
-          if (pool::dbIsValid(vals.db$pool)) pool::poolClose(vals.db$pool)
+        if (isTruthy(vals.db$pool) && vals.db$other) {
+          if (dbIsValid(vals.db$pool)) {
+            poolClose(vals.db$pool)
+            vals.db$pool <- NULL
+          }
         }
       }
+
+      ### Database connection widget based on input
+      output$db_conn_uiOut <- renderUI({
+        choices.list <- c(names(pool.list), "other")
+        names(choices.list) <- c(names(pool.list), "Other")
+
+        radioButtons(
+          session$ns("db_conn"), tags$h5("Select database connection"),
+          choices = choices.list
+        )
+      })
 
       ### Default databases
       observeEvent(input$db_conn, {
@@ -117,20 +115,14 @@ mod_database_server <- function(id, pool.remote.prod, pool.remote.test, db.drive
         db_other_close()
 
         vals.db$other <- FALSE
-        vals.db$pool <- if (input$db_conn == "remote_prod") {
-          pool.remote.prod
-        } else if (input$db_conn == "remote_test") {
-          pool.remote.test
-        } else {
-          NULL
-        }
+        vals.db$pool <- pool.list[[req(input$db_conn)]]
       })
 
       ### Other database, on button click
       observeEvent(input$db_other_action, {
         db_other_close()
 
-        db.args.toadd <- if (input$db_other_conn == "trusted") {
+        db.other.conn <- if (input$db_other_conn == "trusted") {
           list(Trusted_Connection = trusted.connection)
         } else if (input$db_other_conn == "login") {
           list(uid = input$db_other_uid, pwd = input$db_other_pwd,
@@ -147,7 +139,7 @@ mod_database_server <- function(id, pool.remote.prod, pool.remote.test, db.drive
             port = if (input$db_other_port_check) input$db_other_port else NULL,
             Encrypt = if (db.driver == encrypt.driver) "Optional" else NULL
           ),
-          db.args.toadd
+          db.other.conn
         )
 
         vals.db$other <- TRUE
@@ -167,7 +159,7 @@ mod_database_server <- function(id, pool.remote.prod, pool.remote.test, db.drive
                      "specified the correct connection arguments?"))
         )
 
-        db.query <- pool::dbGetQuery(
+        db.query <- dbGetQuery(
           req(vals.db$pool), "SELECT @@servername, DB_NAME(), SYSTEM_USER"
         )
 

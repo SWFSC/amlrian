@@ -6,41 +6,22 @@
 \alias{mod_database_server}
 \title{Database module for AMLR shiny apps}
 \usage{
-mod_database_ui(
-  id,
-  db.name.prod,
-  db.name.test,
-  remote.valid,
-  col.width = 5,
-  db.remote.default = "remote_prod"
-)
+mod_database_ui(id, col.width = 5)
 
-mod_database_server(id, pool.remote.prod, pool.remote.test, db.driver)
+mod_database_server(id, pool.list = list(), db.driver)
 }
 \arguments{
-\item{id}{character used to specify namespace, see \code{shiny::\link[shiny]{NS}}}
-
-\item{db.name.prod}{character; name of production database on SWFSC server}
-
-\item{db.name.test}{character; name of test database on SWFSC server}
-
-\item{remote.valid}{logical; indicates if the remote (TRUE) or local (FALSE)
-database connection should be the default}
+\item{id}{module namespace, see \code{shiny::\link[shiny]{NS}}}
 
 \item{col.width}{integer; column width of column of UI widgets}
 
-\item{db.remote.default}{character; default remote database to connect to.
-To allow developer to specify test database as initial db}
+\item{pool.list}{a (named) list of pool objects created by \code{\link[pool]{dbPool}}.
+The names of the objects in this list will appear as
+'database connection' radioButton options.
+The default is an empty list}
 
-\item{pool.remote.prod}{output of a \code{\link[pool]{dbPool}} call.
-A DBI database connection pool connected to the remote PRODUCTION database,
-e.g. '***REMOVED***'}
-
-\item{pool.remote.test}{output of a \code{\link[pool]{dbPool}} call.
-A DBI database connection pool connected to the remote TEST database,
-e.g. '***REMOVED***_Test'}
-
-\item{db.driver}{character; name of driver used to connect to the databases}
+\item{db.driver}{character; name of driver used to connect to the databases.
+Default is 'ODBC Driver 18 for SQL Server'}
 }
 \value{
 Returns a reactive of the pool connection specified by the user
@@ -50,9 +31,10 @@ Database module for AMLR shiny apps
 }
 \details{
 This module allows users to connect to the database of their choice:
-the provided production database, the provided dev (test) database,
-or a database specified by the user (e.g., a local database).
+any already-created connections
+(e.g., to the ***REMOVED*** production database on the SWC server)
+or a database specified by the user.
 
 If the user specifies their own database,
-then the pool object is created and returned by this module.
+then this module creates the pool object.
 }

@@ -4,8 +4,9 @@
 #'
 #' @name mod_output
 #'
-#' @param id character used to specify namespace, see \code{shiny::\link[shiny]{NS}}
-#' @param ... UI elements to be displayed below the plot and above the 'download plot'save plot' button
+#' @param id module namespace, see \code{shiny::\link[shiny]{NS}}
+#' @param ... UI elements to be displayed below the plot and
+#'   above the 'Save plot' button
 #'
 #' @export
 mod_output_ui <- function(id, ...) {
@@ -71,10 +72,13 @@ mod_output_server <- function(id, parent, tbl.reac, plot.reac, plot.res = 96) {
   moduleServer(
     id,
     function(input, output, session) {
+      # Create parent namespace/id strings
       parent.id <- parent$ns(NULL)
       parent.id.str <- if (length(parent.id) == 0) "" else paste0(parent.id, "-")
 
       #------------------------------------------------------------------------
+      # Table
+
       # Columns to display in table
       output$tbl_cols_uiOut_selectize <- renderUI({
         tbl.names <- names(req(tbl.reac()))
@@ -112,6 +116,8 @@ mod_output_server <- function(id, parent, tbl.reac, plot.reac, plot.res = 96) {
 
 
       #------------------------------------------------------------------------
+      # Plot
+
       plot_height <- reactive({
         validate(
           need(input$plot_height > 100, "The plot height must be at least 100")

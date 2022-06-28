@@ -1,3 +1,8 @@
+# amlrDatabases 0.4.0
+
+* `mod_database` now takes in a list of any number of pool objects, whose names are displayed in the UI as options for the user
+
+
 # amlrDatabases 0.3.1
 
 * Move full shiny app to R folder
