@@ -160,7 +160,7 @@ mod_database_server <- function(id, pool.list = list(), db.driver) {
         )
 
         db.query <- dbGetQuery(
-          req(vals.db$pool), "SELECT @@servername, DB_NAME(), SYSTEM_USER"
+          vals.db$pool, "SELECT @@servername, DB_NAME(), SYSTEM_USER"
         )
 
         data.frame(
