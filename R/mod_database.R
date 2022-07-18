@@ -6,12 +6,34 @@
 #'
 #' @param id module namespace, see \code{shiny::\link[shiny]{NS}}
 #' @param col.width integer; column width of column of UI widgets
-#'
+#' @param server.default default character value for "SQL Server Name";
+#'   default is \code{NULL}. If \code{NULL}, default in module is
+#'   \code{paste0(\link{Sys.info}()[["nodename"]], "\\SQLEXPRESS")}
+#' @param database.default default character value for "SQL Server Database" widget;
+#'   default is "***REMOVED***"
+#' @param port.check.default default boolean value for 'Specify port number' widget;
+#'   default is \code{FALSE}
+#' @param port.default default numeric value for "Port number";
+#'   default is ***REMOVED***
+#' @param conn.default default character value for "Connection type";
+#'   default is "trusted
+#' @param uid.default default character value for "User"; default is "sa"
+#' @param pwd.default default character value for "Password";
+#'   default is \code{NULL}
 #' @export
-mod_database_ui <- function(id, col.width = 5) {
+mod_database_ui <- function(id,
+                            col.width = 5,
+                            server.default = NULL,
+                            database.default = "***REMOVED***",
+                            port.check.default = FALSE,
+                            port.default = ***REMOVED***,
+                            conn.default = "trusted",
+                            uid.default = "sa",
+                            pwd.default = NULL) {
   ns <- NS(id)
 
-  local.server <- paste0(Sys.info()[["nodename"]], "\\SQLEXPRESS")
+  if (is.null(server.default))
+    server.default <- paste0(Sys.info()[["nodename"]], "\\SQLEXPRESS")
 
   # assemble UI elements
   tagList(
@@ -26,21 +48,24 @@ mod_database_ui <- function(id, col.width = 5) {
         box(
           width = 12,
           textInput(ns("db_other_server"), tags$h5("SQL Server Name"),
-                    value = local.server),
-          textInput(ns("db_other_database"), tags$h5("SQL Server Database")),
-          checkboxInput(ns("db_other_port_check"), "Specify port number", value = FALSE),
+                    value = server.default),
+          textInput(ns("db_other_database"), tags$h5("SQL Server Database"),
+                    value = database.default),
+          checkboxInput(ns("db_other_port_check"), "Specify port number",
+                        value = port.check.default),
           conditionalPanel(
             condition = "input.db_other_port_check == true", ns = ns,
-            numericInput(ns("db_other_port"), tags$h5("Port number"), value = ***REMOVED***)
+            numericInput(ns("db_other_port"), tags$h5("Port number"),
+                         value = port.default)
           ),
           radioButtons(ns("db_other_conn"), tags$h5("Connection type"),
-                       choices = list("Trusted connection" = "trusted",
-                                      "User login" = "login"),
-                       selected = "trusted"),
+                       choices = c("Trusted connection" = "trusted",
+                                   "User login" = "login"),
+                       selected = conn.default),
           conditionalPanel(
             condition = "input.db_other_conn == 'login'", ns = ns,
-            textInput(ns("db_other_uid"), tags$h5("User"), value = "sa"),
-            textInput(ns("db_other_pwd"), tags$h5("Password"))
+            textInput(ns("db_other_uid"), tags$h5("User"), value = uid.default),
+            textInput(ns("db_other_pwd"), tags$h5("Password"), value = pwd.default)
           ),
           actionButton(ns("db_other_action"), "Connect to other database")
         )

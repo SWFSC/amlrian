@@ -6,7 +6,17 @@
 \alias{mod_database_server}
 \title{Database module for AMLR shiny apps}
 \usage{
-mod_database_ui(id, col.width = 5)
+mod_database_ui(
+  id,
+  col.width = 5,
+  server.default = NULL,
+  database.default = "***REMOVED***",
+  port.check.default = FALSE,
+  port.default = ***REMOVED***,
+  conn.default = "trusted",
+  uid.default = "sa",
+  pwd.default = NULL
+)
 
 mod_database_server(id, pool.list = list(), db.driver)
 }
@@ -14,6 +24,27 @@ mod_database_server(id, pool.list = list(), db.driver)
 \item{id}{module namespace, see \code{shiny::\link[shiny]{NS}}}
 
 \item{col.width}{integer; column width of column of UI widgets}
+
+\item{server.default}{default character value for "SQL Server Name";
+default is \code{NULL}. If \code{NULL}, default in module is
+\code{paste0(\link{Sys.info}()[["nodename"]], "\\SQLEXPRESS")}}
+
+\item{database.default}{default character value for "SQL Server Database" widget;
+default is "***REMOVED***"}
+
+\item{port.check.default}{default boolean value for 'Specify port number' widget;
+default is \code{FALSE}}
+
+\item{port.default}{default numeric value for "Port number";
+default is ***REMOVED***}
+
+\item{conn.default}{default character value for "Connection type";
+default is "trusted}
+
+\item{uid.default}{default character value for "User"; default is "sa"}
+
+\item{pwd.default}{default character value for "Password";
+default is \code{NULL}}
 
 \item{pool.list}{a (named) list of pool objects created by \code{\link[pool]{dbPool}}.
 The names of the objects in this list will appear as

@@ -1,3 +1,8 @@
+# amlrDatabases 0.4.1
+
+* Add default arguments to `mod_database` for widget defaults so that developers can customize as necessary
+
+
 # amlrDatabases 0.4.0
 
 * `mod_database` now takes in a list of any number of pool objects, whose names are displayed in the UI as options for the user
