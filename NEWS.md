@@ -1,10 +1,12 @@
 # amlrDatabases 0.4.2
 
-* Add `amlr_dbConnect` function for easily connecting to AMLR SQL databases using recommended parameters
+* Added `amlr_dbConnect` function for easily connecting to AMLR SQL databases using recommended parameters
+
+* Added `tableNA` function, commonly used in AMLR database scripts
 
 # amlrDatabases 0.4.1
 
-* Add default arguments to `mod_database` for widget defaults so that developers can customize as necessary
+* Added default arguments to `mod_database` for widget defaults so that developers can customize as necessary
 
 
 # amlrDatabases 0.4.0
