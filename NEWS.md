@@ -1,3 +1,7 @@
+# amlrDatabases 0.4.2
+
+* Add `amlr_dbConnect` function for easily connecting to AMLR SQL databases using recommended parameters
+
 # amlrDatabases 0.4.1
 
 * Add default arguments to `mod_database` for widget defaults so that developers can customize as necessary
