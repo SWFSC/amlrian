@@ -2,6 +2,8 @@
 
 * Added `amlr_dbConnect` function for easily connecting to AMLR SQL databases using recommended parameters
 
+* Added `amlr_season` function for easily constructing a string with the season name from date(s)
+
 * Added `tableNA` function, commonly used in AMLR database scripts
 
 # amlrDatabases 0.4.1

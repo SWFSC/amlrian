@@ -3,6 +3,7 @@
 export(amlrDatabases_shiny)
 export(amlr_dbConnect)
 export(amlr_dbPool)
+export(amlr_season)
 export(mod_database_server)
 export(mod_database_ui)
 export(mod_output_server)
