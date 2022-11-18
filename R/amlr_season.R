@@ -21,7 +21,7 @@
 #'
 #' @export
 amlr_season <- function(x) {
-  stopifnot(inherits(x, "Date"))
+  stopifnot(inherits(x, c("Date", "POSIXct")))
 
   # Use format to avoid more dependencies. Maybe worth it.
   mo <- as.numeric(format(x, "%m"))
