@@ -17,22 +17,24 @@ mod_output_ui <- function(id, ...) {
     fluidRow(
       box(
         status = "primary", width = 12, collapsible = TRUE,
-        fluidRow(
-          column(
-            width = 10,
-            plotOutput(ns("plot"), height = "auto", width = "auto"),
-            ...
-          ),
-          column(
-            width = 2,
-            numericInput(ns("plot_height"), tags$h5("Plot height (pixels)"),
-                         value = 450, min = 0, step = 50, width = "200px"),
-            numericInput(ns("plot_width"), tags$h5("Plot width (pixels)"),
-                         value = 800, min = 0, step = 50, width = "200px"),
-            tags$br(),
-            downloadButton(ns("plot_download"), "Save plot as PNG")
-          )
-        )
+        plotlyOutput(ns("plot"), height = "550px"),
+        ...
+        # fluidRow(
+        #   column(
+        #     width = 10,
+        #     plotlyOutput(ns("plot")),
+        #     ...
+        #   ),
+        #   column(
+        #     width = 2,
+        #     numericInput(ns("plot_height"), tags$h5("Plot height (pixels)"),
+        #                  value = 450, min = 0, step = 50, width = "200px"),
+        #     numericInput(ns("plot_width"), tags$h5("Plot width (pixels)"),
+        #                  value = 800, min = 0, step = 50, width = "200px"),
+        #     tags$br(),
+        #     downloadButton(ns("plot_download"), "Save plot as PNG")
+        #   )
+        # )
       ),
       box(
         status = "primary", width = 12, collapsible = TRUE,
@@ -133,28 +135,32 @@ mod_output_server <- function(id, parent, tbl.reac, plot.reac, plot.res = 96) {
       })
 
       # Output plot
-      output$plot <- renderPlot({
-        plot.reac()
-      }, height = plot_height, width = plot_width, units = "px", res = plot.res)
+      output$plot <- renderPlotly(ggplotly(plot.reac()))
 
-      # Download plot
-      output$plot_download <- downloadHandler(
-        filename = function() {
-          paste0(parent.id.str, "plot.png")
-        },
-        content = function(file) {
-          plot.id <- paste0("output_", parent$ns(id), "-plot")
-          x <- req(session$clientData[[paste0(plot.id, "_width")]]) / plot.res
-          y <- req(session$clientData[[paste0(plot.id, "_height")]]) / plot.res
 
-          # NOTE: if the user needs control over the resolution,
-          #   must use png() device directly per https://github.com/tidyverse/ggplot2/issues/2276
-          # ggsave docs have an example of this (https://ggplot2.tidyverse.org/reference/ggsave.html),
-          #   basically just make sure to print the ggplot object
-
-          ggsave(file, plot = plot.reac(), device = "png", height = y, width = x, units = "in")
-        }
-      )
+      # # Output plot
+      # output$plot <- renderPlot({
+      #   plot.reac()
+      # }, height = plot_height, width = plot_width, units = "px", res = plot.res)
+      #
+      # # Download plot
+      # output$plot_download <- downloadHandler(
+      #   filename = function() {
+      #     paste0(parent.id.str, "plot.png")
+      #   },
+      #   content = function(file) {
+      #     plot.id <- paste0("output_", parent$ns(id), "-plot")
+      #     x <- req(session$clientData[[paste0(plot.id, "_width")]]) / plot.res
+      #     y <- req(session$clientData[[paste0(plot.id, "_height")]]) / plot.res
+      #
+      #     # NOTE: if the user needs control over the resolution,
+      #     #   must use png() device directly per https://github.com/tidyverse/ggplot2/issues/2276
+      #     # ggsave docs have an example of this (https://ggplot2.tidyverse.org/reference/ggsave.html),
+      #     #   basically just make sure to print the ggplot object
+      #
+      #     ggsave(file, plot = plot.reac(), device = "png", height = y, width = x, units = "in")
+      #   }
+      # )
     }
   )
 }
