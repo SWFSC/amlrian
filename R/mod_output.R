@@ -17,8 +17,38 @@ mod_output_ui <- function(id, ...) {
     fluidRow(
       box(
         status = "primary", width = 12, collapsible = TRUE,
-        plotlyOutput(ns("plot"), height = "550px"),
+        fluidRow(
+          column(
+            width = 11,
+            conditionalPanel(
+              condition = "input.plot_type == 'ggplot'", ns = ns,
+              plotOutput(ns("plot_ggplot"))
+            ),
+            conditionalPanel(
+              condition = "input.plot_type == 'plotly'", ns = ns,
+              plotlyOutput(ns("plot_plotly"))
+            )
+          ),
+          column(1, radioButtons(ns("plot_type"), tags$h5("Plot type"),
+                                 choices = c("ggplot", "plotly"),
+                                 selected = "ggplot"))
+        ),
         ...
+        # plotlyOutput(ns("plot")),
+        # fluidRow(
+        #   column(
+        #     width = 10,
+        #     plotlyOutput(ns("plot")),
+        #   ),
+        #   column(
+        #     width = 2,
+        #     numericInput(ns("plot_height"), tags$h5("Plot height (pixels)"),
+        #                  value = 450, min = 0, step = 50, width = "200px"),
+        #     numericInput(ns("plot_width"), tags$h5("Plot width (pixels)"),
+        #                  value = 900, min = 0, step = 50, width = "200px")
+        #   )
+        # ),
+        # ...
         # fluidRow(
         #   column(
         #     width = 10,
@@ -68,7 +98,7 @@ mod_output_server <- function(id, parent, tbl.reac, plot.reac, plot.res = 96) {
     is.reactive(tbl.reac),
     is.reactive(plot.reac),
     inherits(tbl.reac(), "data.frame"),
-    inherits(plot.reac(), "ggplot")
+    inherits(plot.reac(), "ggplot") | is.null(plot.reac())
   )
 
   moduleServer(
@@ -120,24 +150,32 @@ mod_output_server <- function(id, parent, tbl.reac, plot.reac, plot.res = 96) {
       #------------------------------------------------------------------------
       # Plot
 
-      plot_height <- reactive({
-        validate(
-          need(input$plot_height > 100, "The plot height must be at least 100")
-        )
-        input$plot_height
+      # Output plot - plotly
+      output$plot_plotly <- renderPlotly({
+        ggplotly(req(plot.reac()))
+        # ggplotly(req(plot.reac()), height = plot_height(), width = plot_width())
       })
 
-      plot_width <- reactive({
-        validate(
-          need(input$plot_width > 100, "The plot width must be at least 100")
-        )
-        input$plot_width
-      })
-
-      # Output plot
-      output$plot <- renderPlotly(ggplotly(plot.reac()))
+      # Output plot - ggplot
+      output$plot_ggplot <- renderPlot({
+        plot.reac()
+      }, res = plot.res)
 
 
+      # plot_height <- reactive({
+      #   validate(
+      #     need(input$plot_height > 100, "The plot height must be at least 100")
+      #   )
+      #   input$plot_height
+      # })
+      #
+      # plot_width <- reactive({
+      #   validate(
+      #     need(input$plot_width > 100, "The plot width must be at least 100")
+      #   )
+      #   input$plot_width
+      # })
+      #
       # # Output plot
       # output$plot <- renderPlot({
       #   plot.reac()

@@ -1,3 +1,8 @@
+# amlrDatabases 0.5.0
+
+* `mod_output` can now generate ggplot or plotly output plots
+
+
 # amlrDatabases 0.4.2
 
 * Added `amlr_dbConnect` function for easily connecting to AMLR SQL databases using recommended parameters
