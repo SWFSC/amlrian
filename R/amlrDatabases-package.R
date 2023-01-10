@@ -13,6 +13,7 @@
 #' @importFrom dplyr %>% case_when if_else select tbl collect
 #' @importFrom DT DTOutput renderDT
 #' @importFrom ggplot2 ggplot aes geom_point ggtitle ggsave
+#' @importFrom lubridate days_in_month ymd
 #' @importFrom plotly ggplotly renderPlotly plotlyOutput
 #' @importFrom pool dbGetQuery dbIsValid poolClose
 #' @importFrom purrr compact

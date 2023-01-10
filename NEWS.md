@@ -1,3 +1,10 @@
+# amlrDatabases 0.6.0
+
+* Changed `amlr_season` to `amlr_season_from_date` for clarity
+
+* Added function `amlr_date_from_season` for generating date from season name, month, and date
+
+
 # amlrDatabases 0.5.0
 
 * `mod_output` can now generate ggplot or plotly output plots

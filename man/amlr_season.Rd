@@ -2,29 +2,45 @@
 % Please edit documentation in R/amlr_season.R
 \name{amlr_season}
 \alias{amlr_season}
-\title{Determine AMLR season from date}
+\alias{amlr_season_from_date}
+\alias{amlr_date_from_season}
+\title{AMLR seasons and dates}
 \usage{
-amlr_season(x)
+amlr_season_from_date(x)
+
+amlr_date_from_season(season.name, m, d)
 }
 \arguments{
 \item{x}{object of class Date}
+
+\item{season.name}{character; season name. The format must be \code{YYYY/YY}}
+
+\item{m}{month as numeric or character; abbreviation is ok}
+
+\item{d}{numeric; day number in month}
 }
 \value{
 Character vector of length \code{x} of the calculated season names,
-in the form 'YYYY/YY' (e.g., 2016/17)
+in the form 'YYYY/YY' (e.g., 2016/17), or a date object
 }
 \description{
-Determine AMLR season from date
+Determine AMLR season from date, or vice versa
 }
 \details{
-Determine the AMLR season from the date.
-Note that this just generates the season name from the date year,
-with July as the demarcation,
-rather than using the season_info table.
+\code{amlr_season_from date} will determine the AMLR season from the date,
+while \code{amlr_date_from_season} takes in a season name, month, and day
+and returns a date object created using the month, day,
+and the correct year extracted from the seaon name.
+Note that these functions use July (month 7) as the demarcator,
+rather than using the ***REMOVED*** season_info table.
 }
 \examples{
-amlr_season(as.Date("1999-12-31"))
-amlr_season(as.Date(c("2002-03-01", "2002-10-01")))
-amlr_season(as.Date("2017-01-01"))
+amlr_season_from_date(as.Date("1999-12-31"))
+amlr_season_from_date(as.Date("2017-01-01"))
+amlr_season_from_date(as.Date(c("2002-03-01", "2002-10-01")))
+
+amlr_date_from_season("1999/00", 3, 4)
+amlr_date_from_season("1999/00", 12, 4)
+amlr_date_from_season(c("1996/97", "1999/00", "2016/17"), 10, 28)
 
 }
