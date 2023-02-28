@@ -33,6 +33,9 @@ and returns a date object created using the month, day,
 and the correct year extracted from the seaon name.
 Note that these functions use July (month 7) as the demarcator,
 rather than using the ***REMOVED*** season_info table.
+
+For \code{amlr_date_from_season}, \code{season.name}, \code{m}, and \code{d}
+can be vectors, but must all be the same length
 }
 \examples{
 amlr_season_from_date(as.Date("1999-12-31"))
@@ -41,6 +44,6 @@ amlr_season_from_date(as.Date(c("2002-03-01", "2002-10-01")))
 
 amlr_date_from_season("1999/00", 3, 4)
 amlr_date_from_season("1999/00", 12, 4)
-amlr_date_from_season(c("1996/97", "1999/00", "2016/17"), 10, 28)
+amlr_date_from_season(c("1996/97", "2016/17"), c(3, 10), c(28, 19))
 
 }

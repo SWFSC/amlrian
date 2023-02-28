@@ -29,42 +29,23 @@ mod_output_ui <- function(id, ...) {
               plotlyOutput(ns("plot_plotly"))
             )
           ),
-          column(1, radioButtons(ns("plot_type"), tags$h5("Plot type"),
-                                 choices = c("ggplot", "plotly"),
-                                 selected = "ggplot"))
+          column(
+            width = 1,
+            radioButtons(ns("plot_type"), tags$h5("Plot type"),
+                         choices = c("ggplot", "plotly"),
+                         selected = "ggplot")
+            # conditionalPanel(
+            #   condition = "input.plot_type == 'ggplot'", ns = ns,
+            #   numericInput(ns("plot_height"), tags$h5("Plot height (pixels)"),
+            #                value = 650, min = 0, step = 50, width = "200px"),
+            #   numericInput(ns("plot_width"), tags$h5("Plot width (pixels)"),
+            #                value = 900, min = 0, step = 50, width = "200px"),
+            #   tags$br(),
+            #   downloadButton(ns("plot_download"), "Save plot as PNG")
+            # )
+          )
         ),
         ...
-        # plotlyOutput(ns("plot")),
-        # fluidRow(
-        #   column(
-        #     width = 10,
-        #     plotlyOutput(ns("plot")),
-        #   ),
-        #   column(
-        #     width = 2,
-        #     numericInput(ns("plot_height"), tags$h5("Plot height (pixels)"),
-        #                  value = 450, min = 0, step = 50, width = "200px"),
-        #     numericInput(ns("plot_width"), tags$h5("Plot width (pixels)"),
-        #                  value = 900, min = 0, step = 50, width = "200px")
-        #   )
-        # ),
-        # ...
-        # fluidRow(
-        #   column(
-        #     width = 10,
-        #     plotlyOutput(ns("plot")),
-        #     ...
-        #   ),
-        #   column(
-        #     width = 2,
-        #     numericInput(ns("plot_height"), tags$h5("Plot height (pixels)"),
-        #                  value = 450, min = 0, step = 50, width = "200px"),
-        #     numericInput(ns("plot_width"), tags$h5("Plot width (pixels)"),
-        #                  value = 800, min = 0, step = 50, width = "200px"),
-        #     tags$br(),
-        #     downloadButton(ns("plot_download"), "Save plot as PNG")
-        #   )
-        # )
       ),
       box(
         status = "primary", width = 12, collapsible = TRUE,
@@ -177,7 +158,7 @@ mod_output_server <- function(id, parent, tbl.reac, plot.reac, plot.res = 96) {
       # })
       #
       # # Output plot
-      # output$plot <- renderPlot({
+      # output$plot_ggplot <- renderPlot({
       #   plot.reac()
       # }, height = plot_height, width = plot_width, units = "px", res = plot.res)
       #
