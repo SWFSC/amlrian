@@ -84,15 +84,6 @@ amlr_dbConnect <- function(Database,
   db.list <- c(drv = odbc::odbc(), as.list(environment()), list(...))
 
   try(do.call(odbc::dbConnect, purrr::compact(db.list)), silent = silent)
-
-  # dbConnect(odbc::odbc(),
-  #           Driver = "ODBC Driver 18 for SQL Server",
-  #           Server = "swc-***REMOVED***-s",
-  #           # Server = "CAPESHIRREFF7\\SQLEXPRESS",
-  #           # Database = "***REMOVED***",
-  #           Database = "***REMOVED***_Test",
-  #           Trusted_Connection = "Yes",
-  #           Encrypt = "Optional")
 }
 
 
