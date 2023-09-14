@@ -133,7 +133,7 @@ mod_database_server <- function(id, pool.list = list(),
           need(db.selected %in% names(pool.list),
                 "db.selected is not a named item in pool.list")
         )
-        choices.list <- c(pool.list, "other")
+        choices.list <- c(names(pool.list), "other")
         names(choices.list) <- c(names(pool.list), "Other")
 
         radioButtons(
