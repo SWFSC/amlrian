@@ -18,7 +18,12 @@ mod_database_ui(
   pwd.default = NULL
 )
 
-mod_database_server(id, pool.list = list(), db.driver)
+mod_database_server(
+  id,
+  pool.list = list(),
+  db.driver = "ODBC Driver 18 for SQL Server",
+  db.selected = NULL
+)
 }
 \arguments{
 \item{id}{module namespace, see \code{shiny::\link[shiny]{NS}}}
@@ -48,11 +53,14 @@ default is \code{NULL}}
 
 \item{pool.list}{a (named) list of pool objects created by \code{\link[pool]{dbPool}}.
 The names of the objects in this list will appear as
-'database connection' radioButton options.
-The default is an empty list}
+'database connection' \code{\link[shiny]{radioButtons}} options.}
 
-\item{db.driver}{character; name of driver used to connect to the databases.
-Default is 'ODBC Driver 18 for SQL Server'}
+\item{db.driver}{character; name of driver used to connect to the databases}
+
+\item{db.selected}{character; the initial selected value for the
+database connection widget (\code{output$db_conn_uiOut}).
+Passed to \code{selected} argument of \code{\link[shiny]{radioButtons}}.
+Must be \code{NULL}, or the name of a connection in \code{pool.list}}
 }
 \value{
 Returns a reactive of the pool connection specified by the user

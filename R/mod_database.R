@@ -78,10 +78,12 @@ mod_database_ui <- function(id,
 #'
 #' @param pool.list a (named) list of pool objects created by \code{\link[pool]{dbPool}}.
 #'   The names of the objects in this list will appear as
-#'   'database connection' radioButton options.
-#'   The default is an empty list
-#' @param db.driver character; name of driver used to connect to the databases.
-#'   Default is 'ODBC Driver 18 for SQL Server'
+#'   'database connection' \code{\link[shiny]{radioButtons}} options.
+#' @param db.driver character; name of driver used to connect to the databases
+#' @param db.selected character; the initial selected value for the
+#'   database connection widget (\code{output$db_conn_uiOut}).
+#'   Passed to \code{selected} argument of \code{\link[shiny]{radioButtons}}.
+#'   Must be \code{NULL}, or the name of a connection in \code{pool.list}
 #'
 #' @details
 #' This module allows users to connect to the database of their choice:
@@ -96,7 +98,9 @@ mod_database_ui <- function(id,
 #' Returns a reactive of the pool connection specified by the user
 #'
 #' @export
-mod_database_server <- function(id, pool.list = list(), db.driver) {
+mod_database_server <- function(id, pool.list = list(),
+                                db.driver = "ODBC Driver 18 for SQL Server",
+                                db.selected = NULL) {
   moduleServer(
     id,
     function(input, output, session) {
@@ -125,12 +129,16 @@ mod_database_server <- function(id, pool.list = list(), db.driver) {
 
       ### Database connection widget based on input
       output$db_conn_uiOut <- renderUI({
-        choices.list <- c(names(pool.list), "other")
+        validate(
+          need(db.selected %in% names(pool.list),
+                "db.selected is not a named item in pool.list")
+        )
+        choices.list <- c(pool.list, "other")
         names(choices.list) <- c(names(pool.list), "Other")
 
         radioButtons(
           session$ns("db_conn"), tags$h5("Select database connection"),
-          choices = choices.list
+          choices = choices.list, selected = db.selected
         )
       })
 

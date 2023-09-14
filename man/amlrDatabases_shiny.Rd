@@ -14,6 +14,6 @@ of \code{\link[shiny]{runApp}}}
 Open the amlrDatabases Shiny app
 }
 \examples{
-if (interactive()) shiny_app(launch.browser = TRUE)
+if (interactive()) amlrDatabases_shiny(launch.browser = TRUE)
 
 }

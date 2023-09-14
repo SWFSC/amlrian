@@ -1,6 +1,6 @@
 Package: amlrDatabases
 Title: General Functions for US AMLR Database Packages
-Version: 0.6
+Version: 0.6.1
 Authors@R: 
         person("Sam", "Woodman", email = "sam.woodman@noaa.gov", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-6071-8186"))
 Description: A collection of functions used by other US AMLR packages

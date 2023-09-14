@@ -1,3 +1,10 @@
+# amlrDatabases 0.6.1
+
+* Updated `mod_output` so that validate messages actually get passed through and displayed in table and plot output
+
+* Added `db.selected` argument to `mod_database_server` to allow users to pre-select a database connection if passing connection(s) via `pool.list`. Default value is `NULL`, so as to not change default behavior
+
+
 # amlrDatabases 0.6.0
 
 * Changed `amlr_season` to `amlr_season_from_date` for clarity

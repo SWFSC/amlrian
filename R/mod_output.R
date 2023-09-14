@@ -77,9 +77,7 @@ mod_output_ui <- function(id, ...) {
 mod_output_server <- function(id, parent, tbl.reac, plot.reac, plot.res = 96) {
   stopifnot(
     is.reactive(tbl.reac),
-    is.reactive(plot.reac),
-    inherits(tbl.reac(), "data.frame"),
-    inherits(plot.reac(), "ggplot") | is.null(plot.reac())
+    is.reactive(plot.reac)
   )
 
   moduleServer(
@@ -92,13 +90,19 @@ mod_output_server <- function(id, parent, tbl.reac, plot.reac, plot.res = 96) {
       #------------------------------------------------------------------------
       # Table
 
-      # Columns to display in table
+      # Columns to display in table; use reactiveVal for no duplicate validation
+      tbl.names <- reactiveVal(NULL)
+      observe({
+        tbl.names(NULL)
+        tbl.names(names(req(tbl.reac())))
+      })
+
       output$tbl_cols_uiOut_selectize <- renderUI({
-        tbl.names <- names(req(tbl.reac()))
+        req(tbl.names())
 
         selectInput(
           session$ns("tbl_cols"), "Columns to display in table and output CSV",
-          choices = as.list(tbl.names), selected = tbl.names,
+          choices = as.list(tbl.names()), selected = tbl.names(),
           multiple = TRUE, selectize = TRUE
         )
       })
@@ -110,9 +114,13 @@ mod_output_server <- function(id, parent, tbl.reac, plot.reac, plot.res = 96) {
       # Output table
       output$tbl <- renderDT({
         validate(
+          need(inherits(tbl.reac(), "data.frame"),
+               paste("mod_output_server's tbl.reac must be a data frame;",
+                     "please contact the database manager")),
           need(input$tbl_cols, "Please select at least one column to display")
         )
         req(all(input$tbl_cols %in% names(tbl.reac())))
+
         tbl.reac() %>% select(input$tbl_cols)
       }, options = list(scrollX = TRUE))
 
@@ -130,16 +138,24 @@ mod_output_server <- function(id, parent, tbl.reac, plot.reac, plot.res = 96) {
 
       #------------------------------------------------------------------------
       # Plot
+      plot_in <- reactive({
+        validate(
+          need(inherits(plot.reac(), "ggplot") | is.null(plot.reac()),
+               paste("mod_output_server's plot.reac must be a ggplot object;",
+                     "please contact the database manager")),
+        )
+        plot.reac()
+      })
 
       # Output plot - plotly
       output$plot_plotly <- renderPlotly({
-        ggplotly(req(plot.reac()))
+        ggplotly(req(plot_in()))
         # ggplotly(req(plot.reac()), height = plot_height(), width = plot_width())
       })
 
       # Output plot - ggplot
       output$plot_ggplot <- renderPlot({
-        plot.reac()
+        plot_in()
       }, res = plot.res)
 
 
