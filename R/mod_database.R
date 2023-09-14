@@ -130,7 +130,7 @@ mod_database_server <- function(id, pool.list = list(),
       ### Database connection widget based on input
       output$db_conn_uiOut <- renderUI({
         validate(
-          need(db.selected %in% names(pool.list),
+          need(is.null(db.selected) || (db.selected %in% names(pool.list)),
                 "db.selected is not a named item in pool.list")
         )
         choices.list <- c(names(pool.list), "other")
