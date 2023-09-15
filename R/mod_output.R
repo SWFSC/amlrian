@@ -18,33 +18,46 @@ mod_output_ui <- function(id, ...) {
       box(
         status = "primary", width = 12, collapsible = TRUE,
         fluidRow(
-          column(
-            width = 11,
-            conditionalPanel(
-              condition = "input.plot_type == 'ggplot'", ns = ns,
-              plotOutput(ns("plot_ggplot"))
-            ),
-            conditionalPanel(
-              condition = "input.plot_type == 'plotly'", ns = ns,
-              plotlyOutput(ns("plot_plotly"))
-            )
-          ),
-          column(
-            width = 1,
-            radioButtons(ns("plot_type"), tags$h5("Plot type"),
-                         choices = c("ggplot", "plotly"),
-                         selected = "ggplot")
-            # conditionalPanel(
-            #   condition = "input.plot_type == 'ggplot'", ns = ns,
-            #   numericInput(ns("plot_height"), tags$h5("Plot height (pixels)"),
-            #                value = 650, min = 0, step = 50, width = "200px"),
-            #   numericInput(ns("plot_width"), tags$h5("Plot width (pixels)"),
-            #                value = 900, min = 0, step = 50, width = "200px"),
-            #   tags$br(),
-            #   downloadButton(ns("plot_download"), "Save plot as PNG")
-            # )
-          )
+          column(12, uiOutput(ns("plot_uiOut"))),
+          column(12, uiOutput(ns("plot_assoc_uiOut")))
         ),
+        # box(
+        #   width = 12,
+        #   radioButtons(ns("plot_type"), tags$h5("Plot type"),
+        #                choices = c("ggplot", "plotly"),
+        #                selected = "ggplot", inline = TRUE)
+        #   # column(2, tags$h5("Plot type")),
+        #   # column(10, tags$br(), radioButtons(ns("plot_type"), NULL,  #tags$h5("Plot type"),
+        #   #                                    choices = c("ggplot", "plotly"),
+        #   #                                    selected = "ggplot", inline = TRUE))
+        #   # column(
+        #   #   width = 11,
+        #   #   uiOutput(ns("plot"))
+        #   #   # conditionalPanel(
+        #   #   #   condition = "input.plot_type == 'ggplot'", ns = ns,
+        #   #   #   plotOutput(ns("plot_ggplot"))
+        #   #   # ),
+        #   #   # conditionalPanel(
+        #   #   #   condition = "input.plot_type == 'plotly'", ns = ns,
+        #   #   #   plotlyOutput(ns("plot_plotly"))
+        #   #   # )
+        #   # ),
+        #   # column(
+        #   #   width = 1,
+        #   #   radioButtons(ns("plot_type"), tags$h5("Plot type"),
+        #   #                choices = c("ggplot", "plotly"),
+        #   #                selected = "ggplot")
+        #   #   # conditionalPanel(
+        #   #   #   condition = "input.plot_type == 'ggplot'", ns = ns,
+        #   #   #   numericInput(ns("plot_height"), tags$h5("Plot height (pixels)"),
+        #   #   #                value = 650, min = 0, step = 50, width = "200px"),
+        #   #   #   numericInput(ns("plot_width"), tags$h5("Plot width (pixels)"),
+        #   #   #                value = 900, min = 0, step = 50, width = "200px"),
+        #   #   #   tags$br(),
+        #   #   #   downloadButton(ns("plot_download"), "Save plot as PNG")
+        #   #   # )
+        #   # )
+        # ),
         ...
       ),
       box(
@@ -54,9 +67,7 @@ mod_output_ui <- function(id, ...) {
         # tags$br(),
         DTOutput(ns("tbl")),
         tags$br(),
-        uiOutput(ns("tbl_cols_uiOut_selectize")),
-        actionButton(ns("tbl_cols_reset"), "Re-select all columns in original order"),
-        downloadButton(ns("tbl_download"), "Download table as CSV")
+        uiOutput(ns("tbl_assoc_uiOut"))
       )
     )
   )
@@ -97,13 +108,17 @@ mod_output_server <- function(id, parent, tbl.reac, plot.reac, plot.res = 96) {
         tbl.names(names(req(tbl.reac())))
       })
 
-      output$tbl_cols_uiOut_selectize <- renderUI({
+      output$tbl_assoc_uiOut <- renderUI({
         req(tbl.names())
 
-        selectInput(
-          session$ns("tbl_cols"), "Columns to display in table and output CSV",
-          choices = as.list(tbl.names()), selected = tbl.names(),
-          multiple = TRUE, selectize = TRUE
+        tagList(
+          selectInput(
+            session$ns("tbl_cols"), "Columns to display in table and output CSV",
+            choices = as.list(tbl.names()), selected = tbl.names(),
+            multiple = TRUE, selectize = TRUE
+          ),
+          actionButton(ns("tbl_cols_reset"), "Re-select all columns in original order"),
+          downloadButton(ns("tbl_download"), "Download table as CSV")
         )
       })
 
@@ -147,16 +162,45 @@ mod_output_server <- function(id, parent, tbl.reac, plot.reac, plot.res = 96) {
         plot.reac()
       })
 
-      # Output plot - plotly
-      output$plot_plotly <- renderPlotly({
-        ggplotly(req(plot_in()))
-        # ggplotly(req(plot.reac()), height = plot_height(), width = plot_width())
+      # Output plot
+      ns <- NS(id)
+      output$plot_ggplot <- renderPlot(plot_in(), res = plot.res)
+      output$plot_plotly <- renderPlotly(ggplotly(req(plot_in())))
+      # ggplotly(req(plot.reac()), height = plot_height(), width = plot_width())
+
+      output$plot_uiOut <- renderUI({
+        req(plot_in(), input$plot_type)
+
+        if (input$plot_type == 'ggplot') {
+          plotOutput(ns("plot_ggplot"))
+        } else if (input$plot_type == 'plotly') {
+          plotlyOutput(ns("plot_plotly"))
+        } else {
+          validate("bad plot option")
+        }
       })
 
-      # Output plot - ggplot
-      output$plot_ggplot <- renderPlot({
-        plot_in()
-      }, res = plot.res)
+      # Output plot associated widgets: ggplot/plotly and download button
+      plot.istruthy <- reactiveVal(NULL)
+      observe({
+        plot.istruthy(NULL)
+        plot.istruthy(isTruthy(plot_in()))
+      })
+      output$plot_assoc_uiOut <- renderUI({
+        req(plot.istruthy())
+        box(
+          width = 12,
+          fluidRow(
+            column(3, radioButtons(ns("plot_type"), tags$h5("Plot type"),
+                                   choices = c("ggplot", "plotly"),
+                                   selected = "ggplot", inline = TRUE)),
+            conditionalPanel(
+              condition = "input.plot_type == 'ggplot'", ns = ns,
+              column(9, tags$br(), downloadButton(ns("plot_download"), "Save plot as PNG"))
+            )
+          )
+        )
+      })
 
 
       # plot_height <- reactive({
@@ -177,25 +221,29 @@ mod_output_server <- function(id, parent, tbl.reac, plot.reac, plot.res = 96) {
       # output$plot_ggplot <- renderPlot({
       #   plot.reac()
       # }, height = plot_height, width = plot_width, units = "px", res = plot.res)
-      #
-      # # Download plot
-      # output$plot_download <- downloadHandler(
-      #   filename = function() {
-      #     paste0(parent.id.str, "plot.png")
-      #   },
-      #   content = function(file) {
-      #     plot.id <- paste0("output_", parent$ns(id), "-plot")
-      #     x <- req(session$clientData[[paste0(plot.id, "_width")]]) / plot.res
-      #     y <- req(session$clientData[[paste0(plot.id, "_height")]]) / plot.res
-      #
-      #     # NOTE: if the user needs control over the resolution,
-      #     #   must use png() device directly per https://github.com/tidyverse/ggplot2/issues/2276
-      #     # ggsave docs have an example of this (https://ggplot2.tidyverse.org/reference/ggsave.html),
-      #     #   basically just make sure to print the ggplot object
-      #
-      #     ggsave(file, plot = plot.reac(), device = "png", height = y, width = x, units = "in")
-      #   }
-      # )
+
+
+      # Download plot
+      output$plot_download <- downloadHandler(
+        filename = function() {
+          paste0(parent.id.str, "plot.png")
+        },
+        content = function(file) {
+          plot.id <- paste0("output_", parent$ns(id), "-plot_ggplot")
+          x <- req(session$clientData[[paste0(plot.id, "_width")]]) / plot.res
+          y <- req(session$clientData[[paste0(plot.id, "_height")]]) / plot.res
+
+          # NOTE: if the user needs control over the resolution,
+          #   must use png() device directly per https://github.com/tidyverse/ggplot2/issues/2276
+          # ggsave docs have an example of this (https://ggplot2.tidyverse.org/reference/ggsave.html),
+          #   basically just make sure to print the ggplot object
+
+          ggsave(
+            file, plot = plot.reac(), device = "png",
+            height = y, width = x, units = "in"
+          )
+        }
+      )
     }
   )
 }

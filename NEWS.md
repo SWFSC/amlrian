@@ -1,3 +1,8 @@
+# amlrDatabases 0.6.2.9000
+
+* Updated `mod_output` to more consistently display plots, tables, and associated widgets and messages
+
+
 # amlrDatabases 0.6.1
 
 * Updated `mod_output` so that validate messages actually get passed through and displayed in table and plot output
