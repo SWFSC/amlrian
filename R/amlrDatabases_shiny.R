@@ -10,7 +10,7 @@
 #'
 #' @export
 amlrDatabases_shiny <- function(...) {
-  ###############################################################################
+  ##############################################################################
   # Set connections to remote dbs
   db.driver <- "ODBC Driver 18 for SQL Server"
   db.server.remote <- "swc-***REMOVED***-s"
@@ -36,7 +36,7 @@ amlrDatabases_shiny <- function(...) {
   })
 
 
-  ################################################################################
+  ##############################################################################
   # Shiny app
   ui <- dashboardPage(
     title = "Testing amlrDatabases",
@@ -45,8 +45,10 @@ amlrDatabases_shiny <- function(...) {
     dashboardSidebar(
       sidebarMenu(
         id = "tabs",
-        menuItem("Database module", tabName = "tab_database", icon = icon("th", lib = "font-awesome")),
-        menuItem("Output module", tabName = "tab_output", icon = icon("th", lib = "font-awesome"))
+        menuItem("Database module", tabName = "tab_database",
+                 icon = icon("th", lib = "font-awesome")),
+        menuItem("Output module", tabName = "tab_output",
+                 icon = icon("th", lib = "font-awesome"))
         # actionButton("stop", "Close App")
       ), width = "230"
     ),
@@ -60,9 +62,6 @@ amlrDatabases_shiny <- function(...) {
     tabItems(
       tabItem(
         "tab_database",
-        # mod_database_ui("db", db.name.prod, db.name.test, remote.prod.valid,
-        #                 db.remote.default = "remote_test",
-        #                 col.width = 12)
         mod_database_ui("db", col.width = 12)
       ),
       tabItem(
@@ -73,8 +72,8 @@ amlrDatabases_shiny <- function(...) {
                   "table name and click 'Fetch' to print the ",
                   "head() of the table. ",
                   tags$br(), tags$br(),
-                  "Note that some tables may have columns that can't be printed; ",
-                  "these columns may be removed or cause an error. "),
+                  "Note that tables may have columns that can't be printed; ",
+                  "these columns may cause an error if not removed."),
           fluidRow(
             column(6, textInput("tbl_name", tags$h5("Table name"))),
             column(6, tags$br(), tags$br(), actionButton("tbl_go", "Fetch"))
@@ -146,7 +145,7 @@ amlrDatabases_shiny <- function(...) {
 
     })
 
-    observe(mod_output_server("tbl_test", session, tbl_tbl, tbl_plot))
+    observe(mod_output_server("tbl_test", tbl_tbl, tbl_plot))
   }
 
   shiny::shinyApp(ui = ui, server = server, options = list(...))
