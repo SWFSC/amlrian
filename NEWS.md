@@ -1,10 +1,12 @@
 # amlrDatabases 0.7.0.9000
 
-* Removed `parent` argument from `mod_output_server`. The needed information (i.e., the string of the parent namespace ID) is now determined using `session`
+* Removed the `parent` argument from `mod_output_server`. The needed information (i.e., the string of the parent namespace ID) is now determined using `session`
+
+* Removed the `plot.res` argument from `mod_output_server`, and made this a hard-coded value within the function.
 
 * Updated `mod_output` to more consistently display plots, tables, and associated widgets and messages, through the use of `reactiveVal` and `renderUI`/`uiOutput` functions
 
-* Updated `mod_output` so that users can specify ggplot plot dimensions
+* Updated `mod_output` so that users can specify ggplot plot hieght and width
 
 
 # amlrDatabases 0.6.1

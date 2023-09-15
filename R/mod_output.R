@@ -64,14 +64,11 @@ mod_output_ui <- function(id, ...) {
 #'
 #' @param tbl.reac reactive; data frame to be displayed in the table
 #' @param plot.reac reactive; \code{\link[ggplot2]{ggplot}} object to be plotted
-#' @param plot.res numeric; plot resolution.
-#'   Value is passed to \code{\link[shiny]{renderPlot}},
-#'   and used to determine output file dimensions.
 #'
 #' @returns Nothing
 #'
 #' @export
-mod_output_server <- function(id, tbl.reac, plot.reac, plot.res = 96) {
+mod_output_server <- function(id, tbl.reac, plot.reac) {
   stopifnot(
     is.reactive(tbl.reac),
     is.reactive(plot.reac)
@@ -98,6 +95,10 @@ mod_output_server <- function(id, tbl.reac, plot.reac, plot.res = 96) {
       parent.id <- if_else(
         grepl(ns.sep, ns.curr), strsplit(ns.curr, ns.sep)[[1]][-2], id
       )
+
+      # Plot resolution
+      # Passed to renderPlot, and used to determine output file dimensions.
+      plot.res = 96
 
 
       #------------------------------------------------------------------------

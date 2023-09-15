@@ -8,7 +8,7 @@
 \usage{
 mod_output_ui(id, ...)
 
-mod_output_server(id, tbl.reac, plot.reac, plot.res = 96)
+mod_output_server(id, tbl.reac, plot.reac)
 }
 \arguments{
 \item{id}{module namespace, see \code{shiny::\link[shiny]{NS}}}
@@ -19,10 +19,6 @@ below the plot and above the save plot button}
 \item{tbl.reac}{reactive; data frame to be displayed in the table}
 
 \item{plot.reac}{reactive; \code{\link[ggplot2]{ggplot}} object to be plotted}
-
-\item{plot.res}{numeric; plot resolution.
-Value is passed to \code{\link[shiny]{renderPlot}},
-and used to determine output file dimensions.}
 }
 \value{
 Nothing
