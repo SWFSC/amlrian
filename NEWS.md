@@ -4,6 +4,8 @@
 
 * Updated `mod_output` to more consistently display plots, tables, and associated widgets and messages, through the use of `reactiveVal` and `renderUI`/`uiOutput` functions
 
+* Updated `mod_output` so that users can specify ggplot plot dimensions
+
 
 # amlrDatabases 0.6.1
 

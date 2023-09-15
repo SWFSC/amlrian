@@ -6,7 +6,7 @@
 #'
 #' @param id module namespace, see \code{shiny::\link[shiny]{NS}}
 #' @param ... UI elements to be displayed in the plot box,
-#'   but below the plot and assocaited plot widgets
+#'   below the plot and above the save plot button
 #'
 #' @export
 mod_output_ui <- function(id, ...) {
@@ -18,40 +18,37 @@ mod_output_ui <- function(id, ...) {
       box(
         status = "primary", width = 12, collapsible = TRUE,
         fluidRow(
-          column(12, uiOutput(ns("plot_uiOut"))),
-          column(12, uiOutput(ns("plot_assoc_uiOut")))
+          column(10, uiOutput(ns("plot_uiOut"))),
+          column(
+            width = 2,
+            conditionalPanel(
+              condition = "output.plot_assoc_flag", ns = ns,
+              box(
+                width = 12,
+                tags$strong("Plot display"),
+                radioButtons(ns("plot_type"), NULL,
+                             choices = c("ggplot", "plotly"),
+                             selected = "ggplot"),
+                conditionalPanel(
+                  condition = "input.plot_type == 'ggplot'", ns = ns,
+                  numericInput(ns("plot_height"), tags$h5("height (pixels)"),
+                               value = 400, min = 0, step = 50),
+                  checkboxInput(ns("plot_width_auto"), "auto-width", value = TRUE),
+                  conditionalPanel(
+                    condition = "input.plot_width_auto != 1", ns = ns,
+                    numericInput(ns("plot_width"), tags$h5("width (pixels)"),
+                                 value = 750, min = 0, step = 50)
+                  )
+                )
+              )
+            )
+          )
         ),
-        # box(
-        #   width = 12,
-        #   column(
-        #     width = 11,
-        #     uiOutput(ns("plot"))
-        #     # conditionalPanel(
-        #     #   condition = "input.plot_type == 'ggplot'", ns = ns,
-        #     #   plotOutput(ns("plot_ggplot"))
-        #     # ),
-        #     # conditionalPanel(
-        #     #   condition = "input.plot_type == 'plotly'", ns = ns,
-        #     #   plotlyOutput(ns("plot_plotly"))
-        #     # )
-        #   ),
-        #   column(
-        #     width = 1,
-        #     radioButtons(ns("plot_type"), tags$h5("Plot type"),
-        #                  choices = c("ggplot", "plotly"),
-        #                  selected = "ggplot")
-        #     # conditionalPanel(
-        #     #   condition = "input.plot_type == 'ggplot'", ns = ns,
-        #     #   numericInput(ns("plot_height"), tags$h5("Plot height (pixels)"),
-        #     #                value = 650, min = 0, step = 50, width = "200px"),
-        #     #   numericInput(ns("plot_width"), tags$h5("Plot width (pixels)"),
-        #     #                value = 900, min = 0, step = 50, width = "200px"),
-        #     #   tags$br(),
-        #     #   downloadButton(ns("plot_download"), "Save plot as PNG")
-        #     # )
-        #   )
-        # ),
-        ...
+        ...,
+        conditionalPanel(
+          condition = "output.plot_assoc_flag", ns = ns,
+          downloadButton(ns("plot_download"), "Save plot as PNG")
+        )
       ),
       box(
         status = "primary", width = 12, collapsible = TRUE,
@@ -84,7 +81,7 @@ mod_output_server <- function(id, tbl.reac, plot.reac, plot.res = 96) {
   # - reactiveVal used to avoid printing duplicate validation messages
   # - renderUI/uiOutput used to avoid always having UI space used by
   #   plot/DT output widgets, eg when displaying validation messages
-
+  # - plot uses output object because none of widgets depend on plot values
 
 
   moduleServer(
@@ -102,10 +99,85 @@ mod_output_server <- function(id, tbl.reac, plot.reac, plot.res = 96) {
         grepl(ns.sep, ns.curr), strsplit(ns.curr, ns.sep)[[1]][-2], id
       )
 
+
+      #------------------------------------------------------------------------
+      # Plot
+
+      ### Output plot
+      plot_out <- reactive({
+        validate(
+          need(inherits(plot.reac(), "ggplot") | is.null(plot.reac()),
+               paste("mod_output_server's plot.reac must be a ggplot object;",
+                     "please contact the database manager")),
+        )
+        plot.reac()
+      })
+
+      plot_height <- reactive({
+        validate(
+          need(input$plot_height > 100, "The plot height must be at least 100")
+        )
+        input$plot_height
+      })
+      plot_width <- reactive({
+        if (input$plot_width_auto) {
+          "auto"
+        } else {
+          validate(
+            need(input$plot_width > 100, "The plot width must be at least 100")
+          )
+          input$plot_width
+        }
+      })
+
+      output$plot_ggplot <- renderPlot({
+        plot_out()
+      }, height = plot_height, width = plot_width, units = "px", res = plot.res)
+      output$plot_plotly <- renderPlotly(ggplotly(req(plot_out())))
+
+      output$plot_uiOut <- renderUI({
+        req(plot_out(), input$plot_type)
+
+        if (input$plot_type == 'ggplot') {
+          plotOutput(ns("plot_ggplot"), height = plot_height())
+        } else if (input$plot_type == 'plotly') {
+          plotlyOutput(ns("plot_plotly"))
+        } else {
+          validate("bad plot option")
+        }
+      })
+
+      ### Output object for is plot valid, for conditionalPanel in UI
+      output$plot_assoc_flag <- reactive(isTruthy(plot_out()))
+      outputOptions(output, "plot_assoc_flag", suspendWhenHidden = FALSE)
+
+      ### Download plot
+      output$plot_download <- downloadHandler(
+        filename = function() paste(parent.id, "plot.png", sep = "-"),
+        content = function(file) {
+          plot.id <- paste0("output_", session$ns("plot_ggplot"))
+          x <- req(session$clientData[[paste0(plot.id, "_width")]]) / plot.res
+          y <- req(session$clientData[[paste0(plot.id, "_height")]]) / plot.res
+
+          # NOTE: if the user needs control over the resolution,
+          #   must use png() device directly per
+          #   https://github.com/tidyverse/ggplot2/issues/2276
+          # ggsave docs have an example of this
+          #   (https://ggplot2.tidyverse.org/reference/ggsave.html),
+          #   basically just make sure to print the ggplot object
+
+          ggsave(
+            file, plot = plot_out(), device = "png",
+            height = y, width = x, units = "in"
+          )
+        }
+      )
+
+
       #------------------------------------------------------------------------
       # Table
 
-      ### Columns to display in table
+      ### Table-associated widgets
       tbl.names <- reactiveVal(NULL)
       observe({
         tbl.names(NULL)
@@ -155,104 +227,6 @@ mod_output_server <- function(id, tbl.reac, plot.reac, plot.res = 96) {
         filename = function() paste(parent.id, "table.csv", sep = "-"),
         content = function(file) {
           write.csv(tbl_out(), file = file, row.names = FALSE, na = "")
-        }
-      )
-
-
-      #------------------------------------------------------------------------
-      # Plot
-
-      ### Output plot
-      plot_out <- reactive({
-        validate(
-          need(inherits(plot.reac(), "ggplot") | is.null(plot.reac()),
-               paste("mod_output_server's plot.reac must be a ggplot object;",
-                     "please contact the database manager")),
-        )
-        plot.reac()
-      })
-
-      output$plot_ggplot <- renderPlot(plot_out(), res = plot.res)
-      output$plot_plotly <- renderPlotly(ggplotly(req(plot_out())))
-      # ggplotly(req(plot.reac()), height = plot_height(), width = plot_width())
-
-      output$plot_uiOut <- renderUI({
-        req(plot_out(), input$plot_type)
-
-        if (input$plot_type == 'ggplot') {
-          plotOutput(ns("plot_ggplot"))
-        } else if (input$plot_type == 'plotly') {
-          plotlyOutput(ns("plot_plotly"))
-        } else {
-          validate("bad plot option")
-        }
-      })
-
-      ### Output plot associated widgets: ggplot/plotly and download button
-      plot.istruthy <- reactiveVal(NULL)
-      observe({
-        plot.istruthy(NULL)
-        plot.istruthy(isTruthy(plot_out()))
-      })
-      output$plot_assoc_uiOut <- renderUI({
-        req(plot.istruthy())
-        box(
-          width = 12,
-          fluidRow(
-            column(3, radioButtons(ns("plot_type"), "Plot type to display",
-                                   choices = c("ggplot", "plotly"),
-                                   selected = "ggplot", inline = TRUE)),
-            conditionalPanel(
-              condition = "input.plot_type == 'ggplot'", ns = ns,
-              column(
-                width = 9, tags$br(),
-                downloadButton(ns("plot_download"), "Save plot as PNG")
-              )
-            )
-          )
-        )
-      })
-
-
-      # plot_height <- reactive({
-      #   validate(
-      #     need(input$plot_height > 100, "The plot height must be at least 100")
-      #   )
-      #   input$plot_height
-      # })
-      #
-      # plot_width <- reactive({
-      #   validate(
-      #     need(input$plot_width > 100, "The plot width must be at least 100")
-      #   )
-      #   input$plot_width
-      # })
-      #
-      # # Output plot
-      # output$plot_ggplot <- renderPlot({
-      #   plot.reac()
-      # }, height = plot_height, width = plot_width, units = "px", res = plot.res)
-
-
-      # Download plot
-      output$plot_download <- downloadHandler(
-        filename = function() paste(parent.id, "plot.png", sep = "-"),
-        content = function(file) {
-          plot.id <- paste0("output_", session$ns("plot_ggplot"))
-          x <- req(session$clientData[[paste0(plot.id, "_width")]]) / plot.res
-          y <- req(session$clientData[[paste0(plot.id, "_height")]]) / plot.res
-
-          # NOTE: if the user needs control over the resolution,
-          #   must use png() device directly per
-          #   https://github.com/tidyverse/ggplot2/issues/2276
-          # ggsave docs have an example of this
-          #   (https://ggplot2.tidyverse.org/reference/ggsave.html),
-          #   basically just make sure to print the ggplot object
-
-          ggsave(
-            file, plot = plot_out(), device = "png",
-            height = y, width = x, units = "in"
-          )
         }
       )
     }
