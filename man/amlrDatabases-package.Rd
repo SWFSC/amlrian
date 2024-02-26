@@ -14,4 +14,4 @@ General functions used by other US AMLR packages
 \author{
 Sam Woodman \email{sam.woodman@noaa.gov}
 }
-\keyword{package}
+\keyword{internal}

@@ -5,19 +5,17 @@
 #' @param x numeric; see \code{\link[base]{round}}
 #' @param digits numeric; see \code{\link[base]{round}}
 #'
-#' @details
-#' R's default rounding function uses the IEC 60559 standard ('go to
-#' the even digit'; see \code{\link[base]{Round:round}} for more details).
-#' While this is useful for all of the reasons outlined in the standard,
-#' sometimes AMLR scientists want to reproduce 'logical' or 'traditional'
-#' rounding, meaning rounding up from 5.
+#' @details R's default rounding function uses the IEC 60559 standard ('go to
+#' the even digit'; see \code{\link[base]{round}} for more details). While
+#' this is useful for all of the reasons outlined in the standard, sometimes
+#' AMLR scientists want to reproduce 'logical' or 'traditional' rounding,
+#' meaning rounding up from 5.
 #'
 #' This function is implemented from \url{https://stackoverflow.com/a/12688836},
-#' and is the same as the \code{janitor}
-#' function \code{\link[janitor]{round_half_up}} (also see web link below).
+#' and is the same as the \code{janitor} function
+#' \code{round_half_up} (see web link below).
 #'
-#' @seealso
-#' \url{https://sfirke.github.io/janitor/reference/round_half_up.html},
+#' @seealso \url{https://sfirke.github.io/janitor/reference/round_half_up.html},
 #' \url{https://appsilon.com/rounding-issues-in-r-julia-and-python/}
 #'
 #' @export

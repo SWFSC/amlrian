@@ -27,15 +27,15 @@ in the form 'YYYY/YY' (e.g., 2016/17), or a date object
 Determine AMLR season from date, or vice versa
 }
 \details{
-\code{amlr_season_from date} will determine the AMLR season from the date,
-while \code{amlr_date_from_season} takes in a season name, month, and day
-and returns a date object created using the month, day,
-and the correct year extracted from the seaon name.
-Note that these functions use July (month 7) as the demarcator,
-rather than using the ***REMOVED*** season_info table.
+\code{amlr_season_from date} will determine the AMLR season from the
+date, while \code{amlr_date_from_season} takes in a season name, month, and
+day and returns a date object created using the month, day, and the correct
+year extracted from the seaon name. Note that these functions use July
+(month 7) as the demarcator, rather than using the ***REMOVED***
+season_info table.
 
-For \code{amlr_date_from_season}, \code{season.name}, \code{m}, and \code{d}
-can be vectors, but must all be the same length
+For \code{amlr_date_from_season}, \code{season.name}, \code{m}, and
+\code{d} can be vectors, but must all be the same length
 }
 \examples{
 amlr_season_from_date(as.Date("1999-12-31"))

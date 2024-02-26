@@ -13,8 +13,8 @@ tableNA(...)
 Wrapper around table function
 }
 \details{
-Run the \code{\link[base]{table}} function on \code{...},
-while also passing the argument \code{useNA = 'ifany'}
+Run the \code{\link[base]{table}} function on \code{...}, while also
+passing the argument \code{useNA = 'ifany'}
 }
 \examples{
 tableNA(c(1, 2, NA, 2, NA, 2, 1, 3))

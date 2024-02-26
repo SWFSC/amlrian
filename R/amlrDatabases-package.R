@@ -4,7 +4,6 @@
 #'
 #' @name amlrDatabases-package
 #' @aliases amlrDatabases
-#' @docType package
 #' @title General Functions for US AMLR Database Packages
 #' @author Sam Woodman \email{sam.woodman@@noaa.gov}
 #'
@@ -17,9 +16,9 @@
 #' @importFrom plotly ggplotly renderPlotly plotlyOutput
 #' @importFrom pool dbGetQuery dbIsValid poolClose
 #' @importFrom purrr compact
-#' @importFrom shinydashboard dashboardPage dashboardHeader
-#'   dashboardSidebar sidebarMenu menuItem dashboardBody tabItems tabItem box
+#' @importFrom shinydashboard dashboardPage dashboardHeader dashboardSidebar
+#'   sidebarMenu menuItem dashboardBody tabItems tabItem box
 #' @importFrom utils write.csv
 #'
-#' @keywords package
-NULL
+#' @keywords internal
+"_PACKAGE"

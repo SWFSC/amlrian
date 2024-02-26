@@ -3,6 +3,7 @@
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/us-amlr/amlrDatabases/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/us-amlr/amlrDatabases/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 A collection of functions, especially for Shiny apps connected to AMLR databases, used by other [AMLR](https://www.fisheries.noaa.gov/about/antarctic-ecosystem-research-division-southwest-fisheries-science-center) packages. 

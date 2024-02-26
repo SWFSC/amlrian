@@ -4,9 +4,8 @@
 #'
 #' @param ... arguments passes to \code{\link[base]{table}}
 #'
-#' @details
-#' Run the \code{\link[base]{table}} function on \code{...},
-#' while also passing the argument \code{useNA = 'ifany'}
+#' @details Run the \code{\link[base]{table}} function on \code{...}, while also
+#' passing the argument \code{useNA = 'ifany'}
 #'
 #' @examples
 #' tableNA(c(1, 2, NA, 2, NA, 2, 1, 3))

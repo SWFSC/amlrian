@@ -1,4 +1,4 @@
-# amlrDatabases 0.7.0.9000
+# amlrDatabases 0.7.0.9000 (dev)
 
 * Removed the `parent` argument from `mod_output_server`. The needed information (i.e., the string of the parent namespace ID) is now determined using `session`
 
