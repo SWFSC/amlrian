@@ -20,22 +20,25 @@ amlr_date_from_season(season.name, m, d)
 \item{d}{numeric; day number in month}
 }
 \value{
-Character vector of length \code{x} of the calculated season names,
-in the form 'YYYY/YY' (e.g., 2016/17), or a date object
+For \code{amlr_season_from_date()}, a character vector of length \code{x} of
+the calculated season names, in the form 'YYYY/YY' (e.g., 2016/17). For
+\code{amlr_date_from_season()}, a date vector of the same length as
+\code{season.name}
 }
 \description{
 Determine AMLR season from date, or vice versa
 }
 \details{
-\code{amlr_season_from date} will determine the AMLR season from the
-date, while \code{amlr_date_from_season} takes in a season name, month, and
-day and returns a date object created using the month, day, and the correct
-year extracted from the seaon name. Note that these functions use July
-(month 7) as the demarcator, rather than using the ***REMOVED***
+\code{amlr_season_from_date()} will determine the AMLR season from the
+date, while \code{amlr_date_from_season()} takes in a season name, month, and
+day and returns a date object created using the month, day, and the year
+extracted from the season name. Note that these functions use July (month
+7) as the season demarcation line, rather than using the ***REMOVED***
 season_info table.
 
-For \code{amlr_date_from_season}, \code{season.name}, \code{m}, and
-\code{d} can be vectors, but must all be the same length
+For \code{amlr_date_from_season()}, \code{season.name}, \code{m}, and \code{d} can be vectors,
+but a) must either a) all be the same length or b) \code{m} and \code{d} must be of
+length one
 }
 \examples{
 amlr_season_from_date(as.Date("1999-12-31"))
@@ -45,5 +48,6 @@ amlr_season_from_date(as.Date(c("2002-03-01", "2002-10-01")))
 amlr_date_from_season("1999/00", 3, 4)
 amlr_date_from_season("1999/00", 12, 4)
 amlr_date_from_season(c("1996/97", "2016/17"), c(3, 10), c(28, 19))
+amlr_date_from_season(c("1996/97", "2016/17"), 1, 1)
 
 }
