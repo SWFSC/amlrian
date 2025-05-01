@@ -7,19 +7,18 @@
 round_logical(x, digits)
 }
 \arguments{
-\item{x}{numeric; see \code{\link[base]{round}}}
+\item{x}{numeric; see \code{\link[base:Round]{base::round()}}}
 
-\item{digits}{numeric; see \code{\link[base]{round}}}
+\item{digits}{numeric; see \code{\link[base:Round]{base::round()}}}
 }
 \description{
 Always round fives up
 }
 \details{
-R's default rounding function uses the IEC 60559 standard ('go to
-the even digit'; see \code{\link[base]{round}} for more details). While
-this is useful for all of the reasons outlined in the standard, sometimes
-AMLR scientists want to reproduce 'logical' or 'traditional' rounding,
-meaning rounding up from 5.
+R's default rounding function uses the IEC 60559 standard ('go to the even
+digit'; see \code{\link[base:Round]{base::round()}} for more details). While this is useful for all
+of the reasons outlined in the standard, sometimes AMLR scientists want to
+reproduce 'logical' or 'traditional' rounding, meaning rounding up from 5.
 
 This function is implemented from \url{https://stackoverflow.com/a/12688836},
 and is the same as the \code{janitor} function

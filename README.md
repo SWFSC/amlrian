@@ -1,8 +1,6 @@
 # amlrDatabases
 
-
 <!-- badges: start -->
-
 [![R-CMD-check](https://github.com/us-amlr/amlrDatabases/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/us-amlr/amlrDatabases/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -10,11 +8,15 @@ A collection of functions, especially for Shiny apps connected to AMLR databases
 
 ## Installation
 
-You can install the development version of amlrDatabases from [GitHub](https://github.com/) with:
+You can install the development version of `amlrDatabases` from [GitHub](https://github.com/) with the following. Using the [pak](https://pak.r-lib.org/) package may work around some GitHub/certificate issues on NOAA machines.
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("us-amlr/amlrDatabases")
+
+### OR ###
+# install.packages("pak")
+pak::pkg_install("us-amlr/amlrDatabases")
 ```
 
 ## Run Shiny App

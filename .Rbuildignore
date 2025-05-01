@@ -1,3 +1,5 @@
 ^amlrDatabases\.Rproj$
 ^\.Rproj\.user$
 ^\.github$
+^data-raw$
+^LICENSE\.md$

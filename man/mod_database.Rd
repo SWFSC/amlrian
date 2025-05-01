@@ -4,76 +4,64 @@
 \alias{mod_database}
 \alias{mod_database_ui}
 \alias{mod_database_server}
-\title{Database module for AMLR shiny apps}
+\title{Database connection module for AMLR shiny apps}
 \usage{
 mod_database_ui(
   id,
   col.width = 5,
   server.default = NULL,
-  database.default = "***REMOVED***",
-  port.check.default = FALSE,
-  port.default = ***REMOVED***,
+  database.default = NULL,
+  port.default = NULL,
   conn.default = "trusted",
-  uid.default = "sa",
+  uid.default = NULL,
   pwd.default = NULL
 )
 
-mod_database_server(
-  id,
-  pool.list = list(),
-  db.driver = "ODBC Driver 18 for SQL Server",
-  db.selected = NULL
-)
+mod_database_server(id, pool.list = list(), filedsn = NULL)
 }
 \arguments{
 \item{id}{module namespace, see \code{shiny::\link[shiny]{NS}}}
 
 \item{col.width}{integer; column width of column of UI widgets}
 
-\item{server.default}{default character value for "SQL Server Name";
-default is \code{NULL}. If \code{NULL}, default in module is
-\code{paste0(\link{Sys.info}()[["nodename"]], "\\SQLEXPRESS")}}
+\item{server.default}{default character value for "Server Hostname";
+default is \code{NULL}. If \code{NULL}, the module defaults to
+\code{paste0(Sys.info()[["nodename"]], "\\\\SQLEXPRESS")}}
 
-\item{database.default}{default character value for "SQL Server Database" widget;
-default is "***REMOVED***"}
-
-\item{port.check.default}{default boolean value for 'Specify port number' widget;
-default is \code{FALSE}}
+\item{database.default}{default character value for "Database"
+widget; default is NULL}
 
 \item{port.default}{default numeric value for "Port number";
-default is ***REMOVED***}
+default is \code{NULL}}
 
 \item{conn.default}{default character value for "Connection type";
 default is "trusted}
 
-\item{uid.default}{default character value for "User"; default is "sa"}
+\item{uid.default}{default character value for "User";
+default is \code{NULL}}
 
 \item{pwd.default}{default character value for "Password";
 default is \code{NULL}}
 
-\item{pool.list}{a (named) list of pool objects created by \code{\link[pool]{dbPool}}.
+\item{pool.list}{a (named) list of pool objects created by \code{\link[pool:dbPool]{pool::dbPool()}}.
 The names of the objects in this list will appear as
-'database connection' \code{\link[shiny]{radioButtons}} options.}
+'database connection' \code{\link[shiny:radioButtons]{shiny::radioButtons()}} options.}
 
-\item{db.driver}{character; name of driver used to connect to the databases}
-
-\item{db.selected}{character; the initial selected value for the
-database connection widget (\code{output$db_conn_uiOut}).
-Passed to \code{selected} argument of \code{\link[shiny]{radioButtons}}.
-Must be \code{NULL}, or the name of a connection in \code{pool.list}}
+\item{filedsn}{character; default is \code{NULL.} The file path to a DSN file with a
+database connection. If not \code{NULL}, Tamatoa will try to try to establish a
+database connection using \link[pool:dbPool]{pool::dbPool}. See 'Details' for an example}
 }
 \value{
 Returns a reactive of the pool connection specified by the user
 }
 \description{
-Database module for AMLR shiny apps
+Database connection module for AMLR shiny apps
 }
 \details{
-This module allows users to connect to the database of their choice:
-any already-created connections
-(e.g., to the ***REMOVED*** production database on the SWC server)
-or a database specified by the user.
+This module allows users to connect to the database of their choice: any
+already-created connections (e.g., a connection specified by a filedsn in a
+parent function) or a database specified by the user.
 
-If the user specifies their own database,
-then this module creates the pool object.
+If the user specifies their own database, then this module creates that pool
+object.
 }

@@ -2,42 +2,34 @@
 #'
 #' Open the amlrDatabases Shiny app
 #'
-#' @param ... arguments passed as a list to the \code{options} argument
-#'   of \code{\link[shiny]{runApp}}
+#' @param ... arguments passed as a list to the `options` argument of
+#'   [shiny::runApp()]
+#' @param filedsn character; see [amlrDatabases::mod_database()] for details
 #'
-#' @examples
-#' if (interactive()) amlrDatabases_shiny(launch.browser = TRUE)
+#' @details
+#' The amlrDatabases Shiny app is a testing/development app. To date, is has
+#' been used to develop and test the datbase connection and output modules
+#' contained in this package
+#'
+#' @examplesIf interactive()
+#' amlrDatabases_shiny(launch.browser = TRUE)
 #'
 #' @export
-amlrDatabases_shiny <- function(...) {
-  ##############################################################################
-  # Set connections to remote dbs
-  db.driver <- "ODBC Driver 18 for SQL Server"
-  db.server.remote <- "swc-***REMOVED***-s"
+amlrDatabases_shiny <- function(..., filedsn = NULL) {
+  ##### Prep work
+  # NOTE: yes, this intentionally duplicates the filedsn connection
+  # Left as an example
+  if (!is.null(filedsn)) {
+    pool.filedsn <- pool::dbPool(odbc::odbc(), filedsn = filedsn)
 
-  db.name.prod <- "***REMOVED***"
-  db.name.test <- "***REMOVED***_Test"
-
-  pool.remote.prod <- amlr_dbPool(db.name.prod, db.driver, db.server.remote)
-  remote.prod.valid <- isTruthy(pool.remote.prod)
-
-  if (remote.prod.valid) {
-    pool.remote.test <- amlr_dbPool(db.name.test, db.driver, db.server.remote)
-    remote.prod.valid <- dbIsValid(pool.remote.prod)
-  } else {
-    pool.remote.test <- NULL
+    onStop(function() {
+      if (isTruthy(pool.filedsn))
+        if (dbIsValid(pool.filedsn)) poolClose(pool.filedsn)
+    })
   }
 
-  onStop(function() {
-    if (isTruthy(pool.remote.prod))
-      if (dbIsValid(pool.remote.prod)) poolClose(pool.remote.prod)
-    if (isTruthy(pool.remote.test))
-      if (dbIsValid(pool.remote.test)) poolClose(pool.remote.test)
-  })
 
-
-  ##############################################################################
-  # Shiny app
+  ##### Shiny app
   ui <- dashboardPage(
     title = "Testing amlrDatabases",
     dashboardHeader(title = "Testing amlrDatabases"),
@@ -103,19 +95,15 @@ amlrDatabases_shiny <- function(...) {
     })
 
     #--------------------------------------------------------
-    pool.list <- list(
-      `***REMOVED*** - ***REMOVED***` = pool.remote.prod,
-      `***REMOVED***_Test - ***REMOVED***` = pool.remote.test
-    )
-    db.pool <- mod_database_server(
-      "db", pool.list, db.driver
-      # db.selected = "bobb"
-    )
+    pool.list <- purrr::compact(list(
+      `filedsn argument og` = if (isTruthy(filedsn)) pool.filedsn else NULL
+    ))
+    db.pool <- mod_database_server("db", pool.list, filedsn = filedsn)
 
 
     #--------------------------------------------------------
     tbl_tbl <- eventReactive(input$tbl_go, {
-      x <- try(tbl(db.pool(), input$tbl_name) %>% collect(), silent = TRUE)
+      x <- try(collect(tbl(db.pool(), input$tbl_name)), silent = TRUE)
       validate(need(x, "Unable to fetch table"))
 
       x[, setdiff(names(x), "ts")]

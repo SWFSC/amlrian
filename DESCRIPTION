@@ -1,6 +1,6 @@
 Package: amlrDatabases
 Title: General Functions for US AMLR Database Packages
-Version: 0.7.0.9000
+Version: 0.7.0
 Authors@R: 
         person("Sam", "Woodman", email = "sam.woodman@noaa.gov", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-6071-8186"))
 Description: A collection of functions used by other US AMLR packages
@@ -17,7 +17,8 @@ Imports:
     purrr, 
     shiny (>= 1.5.0),
     shinydashboard
-License: CC0
+License: Apache License (== 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+LazyData: true

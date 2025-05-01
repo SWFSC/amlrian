@@ -2,10 +2,13 @@
 #'
 #' Wrapper around table function
 #'
-#' @param ... arguments passes to \code{\link[base]{table}}
+#' @param ... arguments passed to [base::table()]
 #'
-#' @details Run the \code{\link[base]{table}} function on \code{...}, while also
-#' passing the argument \code{useNA = 'ifany'}
+#' @details
+#' Wrapper around table function to automatically pass `useNA = 'ifany'`.
+#'
+#' Specifically, run the [base::table()] function on `...`, while also passing
+#' the argument `useNA = 'ifany'`
 #'
 #' @examples
 #' tableNA(c(1, 2, NA, 2, NA, 2, 1, 3))

@@ -1,27 +1,27 @@
 #' AMLR seasons and dates
 #'
-#' Determine AMLR season from date, or vice versa
+#' Determine AMLR season from a given date, or vice versa
 #'
 #' @param x object of class Date
 #' @param season.name character; season name. The format must be \code{YYYY/YY}
 #' @param m month as numeric or character; abbreviation is ok
 #' @param d numeric; day number in month
 #'
-#' @details `amlr_season_from_date()` will determine the AMLR season from the
-#'   date, while `amlr_date_from_season()` takes in a season name, month, and
-#'   day and returns a date object created using the month, day, and the year
-#'   extracted from the season name. Note that these functions use July (month
-#'   7) as the season demarcation line, rather than using the ***REMOVED***
-#'   season_info table.
+#' @details
+#' `amlr_season_from_date()` will determine the AMLR season from the date, while
+#' `amlr_date_from_season()` takes in a season name, month, and day and returns
+#' a date object created using the month, day, and the year extracted from the
+#' season name. Note that these functions use July (month 7) as the season
+#' demarcation line, rather than using the database season_info table.
 #'
-#'   For `amlr_date_from_season()`, `season.name`, `m`, and `d` can be vectors,
-#'   but a) must either a) all be the same length or b) `m` and `d` must be of
-#'   length one
+#' For `amlr_date_from_season()`, `season.name`, `m`, and `d` can be vectors,
+#' but a) must either a) all be the same length or b) `m` and `d` must be of
+#' length one
 #'
-#' @return For `amlr_season_from_date()`, a character vector of length `x` of
-#'   the calculated season names, in the form 'YYYY/YY' (e.g., 2016/17). For
-#'   `amlr_date_from_season()`, a date vector of the same length as
-#'   `season.name`
+#' @return
+#' For `amlr_season_from_date()`, a character vector of length `x` of the
+#' calculated season names, in the form 'YYYY/YY' (e.g., 2016/17). For
+#' `amlr_date_from_season()`, a date vector of the same length as `season.name`
 #'
 #' @examples
 #' amlr_season_from_date(as.Date("1999-12-31"))

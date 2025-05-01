@@ -4,16 +4,24 @@
 \alias{amlrDatabases_shiny}
 \title{Open the amlrDatabases Shiny app}
 \usage{
-amlrDatabases_shiny(...)
+amlrDatabases_shiny(..., filedsn = NULL)
 }
 \arguments{
-\item{...}{arguments passed as a list to the \code{options} argument
-of \code{\link[shiny]{runApp}}}
+\item{...}{arguments passed as a list to the \code{options} argument of
+\code{\link[shiny:runApp]{shiny::runApp()}}}
+
+\item{filedsn}{character; see \link{mod_database}}
 }
 \description{
 Open the amlrDatabases Shiny app
 }
+\details{
+The amlrDatabases Shiny app is a testing/development app. To date, is has
+been used to develop and test the datbase connection and output modules
+contained in this package
+}
 \examples{
-if (interactive()) amlrDatabases_shiny(launch.browser = TRUE)
-
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+amlrDatabases_shiny(launch.browser = TRUE)
+\dontshow{\}) # examplesIf}
 }

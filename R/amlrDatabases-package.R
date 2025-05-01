@@ -9,7 +9,7 @@
 #'
 #' @import shiny
 #'
-#' @importFrom dplyr %>% case_when if_else select tbl collect
+#' @importFrom dplyr %>% case_when if_else select tbl collect filter pull
 #' @importFrom DT DTOutput renderDT
 #' @importFrom ggplot2 ggplot aes geom_point ggtitle ggsave
 #' @importFrom lubridate days_in_month ymd
@@ -18,7 +18,11 @@
 #' @importFrom purrr compact
 #' @importFrom shinydashboard dashboardPage dashboardHeader dashboardSidebar
 #'   sidebarMenu menuItem dashboardBody tabItems tabItem box
-#' @importFrom utils write.csv
+#' @importFrom utils globalVariables write.csv
 #'
 #' @keywords internal
 "_PACKAGE"
+
+# https://github.com/r-lib/tidyselect/issues/248
+# https://r-pkgs.org/package-within.html#echo-a-working-package
+utils::globalVariables(c("attribute", "name", "value"))

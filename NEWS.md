@@ -1,4 +1,6 @@
-# amlrDatabases 0.7.0.9000 (dev)
+# amlrDatabases 0.7.0
+
+* Updated to use Apache 2.0 license
 
 * Removed the `parent` argument from `mod_output_server`. The needed information (i.e., the string of the parent namespace ID) is now determined using `session`
 
@@ -9,6 +11,10 @@
 * Updated `mod_output` so that users can specify ggplot plot height and width
 
 * Added `round_logical` to always round up values of 5
+
+* Added `amlr.driver` object, to be able to easily reference the AMLR-preferred ODBC driver to use to connect to a database
+
+* Several `mod_database` updates, including: removed bad defaults, added Driver dropdown, updated to use `amlr.driver` object, added filedsn to let the user safely specify a default pool connection, more robust extraction (for display) of database connection info using `pool::dbGetInfo()`
 
 
 # amlrDatabases 0.6.1
