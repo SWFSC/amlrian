@@ -13,9 +13,11 @@
 #' @importFrom DT DTOutput renderDT
 #' @importFrom ggplot2 ggplot aes geom_point ggtitle ggsave
 #' @importFrom lubridate days_in_month ymd
+#' @importFrom odbc odbc odbcListDrivers
 #' @importFrom plotly ggplotly renderPlotly plotlyOutput
-#' @importFrom pool dbGetQuery dbIsValid poolClose
-#' @importFrom purrr compact
+#' @importFrom pool dbGetInfo dbGetQuery dbIsValid dbPool poolClose poolReturn
+#'   poolCheckout localCheckout
+#' @importFrom purrr compact set_names
 #' @importFrom shinydashboard dashboardPage dashboardHeader dashboardSidebar
 #'   sidebarMenu menuItem dashboardBody tabItems tabItem box
 #' @importFrom utils globalVariables write.csv

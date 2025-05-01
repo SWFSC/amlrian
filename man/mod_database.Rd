@@ -67,9 +67,7 @@ and the module will attempt to create the connection defined by the \code{fileds
 argument.
 
 If \code{filedsn} argument is not \code{NULL}, then Tamatoa will try to make a
-connection via:
-
-\code{pool::dbPool(odbc::odbc(), filedsn = filedsn)}
+connection via: \code{pool::dbPool(odbc::odbc(), filedsn = filedsn)}
 
 The order of priority for the default selected database: \code{pool.list},
 \code{filedsn}, then 'Other'.

@@ -116,9 +116,7 @@ mod_database_ui <- function(id,
 #' argument.
 #'
 #' If `filedsn` argument is not `NULL`, then Tamatoa will try to make a
-#' connection via:
-#'
-#' `pool::dbPool(odbc::odbc(), filedsn = filedsn)`
+#' connection via: `pool::dbPool(odbc::odbc(), filedsn = filedsn)`
 #'
 #' The order of priority for the default selected database: `pool.list`,
 #' `filedsn`, then 'Other'.
@@ -137,21 +135,30 @@ mod_database_server <- function(id, pool.list = list(), filedsn = NULL) {
         other = FALSE
       )
 
+      #----------------------------------------------------------------------------
       # Connect to database specified by filedsn argument, if specified
       if (!is.null(filedsn)) {
-        pool.filedsn <- try(pool::dbPool(odbc::odbc(), filedsn = filedsn),
-                            silent = TRUE)
+        pool.filedsn <- try(dbPool(odbc(), filedsn = filedsn), silent = TRUE)
 
         if (isTruthy(pool.filedsn)) {
           onStop(function() {
             if (isTruthy(pool.filedsn))
               if (dbIsValid(pool.filedsn)) {
-                print("closing2")
                 poolClose(pool.filedsn)
               }
           })
 
-          pool.list <- c(pool.list, `filedsn argument` = pool.filedsn)
+          con <- poolCheckout(pool.filedsn)
+          info <- dbGetInfo(con)
+          poolReturn(con)
+
+          pool.list <- c(
+            pool.list,
+            purrr::set_names(
+              list(pool.filedsn),
+              paste("filedsn", info$servername, info$dbname, sep = " - ")
+            )
+          )
 
         } else {
           warning("Unable to make a database connection using ",
@@ -162,6 +169,8 @@ mod_database_server <- function(id, pool.list = list(), filedsn = NULL) {
 
 
       #----------------------------------------------------------------------------
+      # Select database connection
+
       ### Render the widget to select the Database connection
       output$db_conn_uiOut <- renderUI({
         choices.list <- c(names(pool.list), "other")
@@ -173,21 +182,7 @@ mod_database_server <- function(id, pool.list = list(), filedsn = NULL) {
         )
       })
 
-      #----------------------------------------------------------------------------
-      #
-
-      ### Close other database
-      db_other_close <- function() {
-        if (isTruthy(vals.db$pool) && vals.db$other) {
-          if (dbIsValid(vals.db$pool)) {
-            print("closing1")
-            poolClose(vals.db$pool)
-            vals.db$pool <- NULL
-          }
-        }
-      }
-
-      ### Default databases
+      ### Select a pre-defined database
       observeEvent(input$db_conn, {
         req(input$db_conn != "other")
         db_other_close()
@@ -195,6 +190,19 @@ mod_database_server <- function(id, pool.list = list(), filedsn = NULL) {
         vals.db$other <- FALSE
         vals.db$pool <- pool.list[[req(input$db_conn)]]
       })
+
+      #----------------------------------------------------------------------------
+      # 'Other' database management
+
+      ### Close other database
+      db_other_close <- function() {
+        if (isTruthy(vals.db$pool) && vals.db$other) {
+          if (dbIsValid(vals.db$pool)) {
+            poolClose(vals.db$pool)
+            vals.db$pool <- NULL
+          }
+        }
+      }
 
       ### Connect to an 'other' database, on button click
       observeEvent(input$db_other_action, {
@@ -234,7 +242,7 @@ mod_database_server <- function(id, pool.list = list(), filedsn = NULL) {
       #----------------------------------------------------------------------------
       # Outputs
 
-      ### Get and print info about db connection
+      ### Get and display info about db connection
       output$pool_db_conn <- renderTable({
         validate(
           need(inherits(vals.db$pool, "Pool"),
@@ -243,8 +251,8 @@ mod_database_server <- function(id, pool.list = list(), filedsn = NULL) {
                      "specified the correct connection arguments?"))
         )
 
-        con <- pool::localCheckout(vals.db$pool)
-        info <- pool::dbGetInfo(con)
+        con <- localCheckout(vals.db$pool)
+        info <- dbGetInfo(con)
 
         data.frame(
           Label = c("Server", "Database", "User", "Driver", "Driver Version"),
