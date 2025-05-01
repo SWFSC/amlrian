@@ -20,28 +20,28 @@ mod_database_ui(
 mod_database_server(id, pool.list = list(), filedsn = NULL)
 }
 \arguments{
-\item{id}{module namespace, see \code{shiny::\link[shiny]{NS}}}
+\item{id}{module namespace, see \code{\link[shiny:NS]{shiny::NS()}}}
 
 \item{col.width}{integer; column width of column of UI widgets}
 
-\item{server.default}{default character value for "Server Hostname";
+\item{server.default}{default character value for "Server Hostname" widget;
 default is \code{NULL}. If \code{NULL}, the module defaults to
 \code{paste0(Sys.info()[["nodename"]], "\\\\SQLEXPRESS")}}
 
-\item{database.default}{default character value for "Database"
-widget; default is NULL}
-
-\item{port.default}{default numeric value for "Port number";
+\item{database.default}{default character value for "Database" widget;
 default is \code{NULL}}
 
-\item{conn.default}{default character value for "Connection type";
-default is "trusted}
+\item{port.default}{default numeric value for "Port number" widget; default
+is \code{NULL}}
 
-\item{uid.default}{default character value for "User";
-default is \code{NULL}}
+\item{conn.default}{default character value for "Connection type" widget;
+default is \code{"trusted"}}
 
-\item{pwd.default}{default character value for "Password";
-default is \code{NULL}}
+\item{uid.default}{default character value for "User" widget; default is
+\code{NULL}}
+
+\item{pwd.default}{default character value for "Password" widget; default is
+\code{NULL}}
 
 \item{pool.list}{a (named) list of pool objects created by \code{\link[pool:dbPool]{pool::dbPool()}}.
 The names of the objects in this list will appear as
@@ -52,16 +52,25 @@ database connection. If not \code{NULL}, Tamatoa will try to try to establish a
 database connection using \link[pool:dbPool]{pool::dbPool}. See 'Details' for an example}
 }
 \value{
-Returns a reactive of the pool connection specified by the user
+Returns a reactive of the pool connection specified by the user, which can
+then be passed to other modules.
 }
 \description{
 Database connection module for AMLR shiny apps
 }
 \details{
-This module allows users to connect to the database of their choice: any
-already-created connections (e.g., a connection specified by a filedsn in a
-parent function) or a database specified by the user.
+This module includes the UI for a user to specify and
+create a database connection. It also allows users to connect to the database
+of their choice in a parent function, and pass that connection (those
+connections) via \code{pool.list}. Additionally, users can provide a filedsn,
+and the module will attempt to create the connection defined by the \code{filedsn}
+argument.
 
-If the user specifies their own database, then this module creates that pool
-object.
+If \code{filedsn} argument is not \code{NULL}, then Tamatoa will try to make a
+connection via:
+
+\code{pool::dbPool(odbc::odbc(), filedsn = filedsn)}
+
+The order of priority for the default selected database: \code{pool.list},
+\code{filedsn}, then 'Other'.
 }

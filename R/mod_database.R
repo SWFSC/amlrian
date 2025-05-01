@@ -108,15 +108,24 @@ mod_database_ui <- function(id,
 #'   database connection using [pool::dbPool]. See 'Details' for an example
 #'
 #' @details
-#' This module allows users to connect to the database of their choice: any
-#' already-created connections (e.g., a connection specified by a filedsn in a
-#' parent function) or a database specified by the user.
+#' This module includes the UI for a user to specify and
+#' create a database connection. It also allows users to connect to the database
+#' of their choice in a parent function, and pass that connection (those
+#' connections) via `pool.list`. Additionally, users can provide a filedsn,
+#' and the module will attempt to create the connection defined by the `filedsn`
+#' argument.
 #'
-#' If the user specifies their own database, then this module creates that pool
-#' object.
+#' If `filedsn` argument is not `NULL`, then Tamatoa will try to make a
+#' connection via:
+#'
+#' `pool::dbPool(odbc::odbc(), filedsn = filedsn)`
+#'
+#' The order of priority for the default selected database: `pool.list`,
+#' `filedsn`, then 'Other'.
 #'
 #' @returns
-#' Returns a reactive of the pool connection specified by the user
+#' Returns a reactive of the pool connection specified by the user, which can
+#' then be passed to other modules.
 #'
 #' @export
 mod_database_server <- function(id, pool.list = list(), filedsn = NULL) {

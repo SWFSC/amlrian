@@ -10,7 +10,7 @@ amlrDatabases_shiny(..., filedsn = NULL)
 \item{...}{arguments passed as a list to the \code{options} argument of
 \code{\link[shiny:runApp]{shiny::runApp()}}}
 
-\item{filedsn}{character; see \link{mod_database}}
+\item{filedsn}{character; see \code{\link[=mod_database]{mod_database()}} for details}
 }
 \description{
 Open the amlrDatabases Shiny app
