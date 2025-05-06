@@ -4,11 +4,14 @@
 \alias{amlr_season}
 \alias{amlr_season_from_date}
 \alias{amlr_date_from_season}
+\alias{amlr_year_from_season}
 \title{AMLR seasons and dates}
 \usage{
 amlr_season_from_date(x)
 
 amlr_date_from_season(season.name, m, d)
+
+amlr_year_from_season(season.name)
 }
 \arguments{
 \item{x}{object of class Date}
@@ -20,9 +23,11 @@ amlr_date_from_season(season.name, m, d)
 \item{d}{numeric; day number in month}
 }
 \value{
-For \code{amlr_season_from_date()}, a character vector of length \code{x} of the
-calculated season names, in the form 'YYYY/YY' (e.g., 2016/17). For
-\code{amlr_date_from_season()}, a date vector of the same length as \code{season.name}
+\code{amlr_season_from_date()} returns a character vector of length \code{x} of the
+calculated season names, in the form 'YYYY/YY' (e.g., 2016/17).
+\code{amlr_date_from_season()} returns a date vector of the same length as
+\code{season.name}. \code{amlr_year_from_season()} returns an integer vector of the
+same length as \code{season.name}.
 }
 \description{
 Determine AMLR season from a given date, or vice versa
@@ -33,6 +38,10 @@ Determine AMLR season from a given date, or vice versa
 a date object created using the month, day, and the year extracted from the
 season name. Note that these functions use July (month 7) as the season
 demarcation line, rather than using the database season_info table.
+
+\code{amlr_year_from_season()} determines the 'AMLR year' from the season name.
+The AMLR year is the year that begins in January. For instance, for the
+'2000/01' season, the AMLR year is '2001.
 
 For \code{amlr_date_from_season()}, \code{season.name}, \code{m}, and \code{d} can be vectors,
 but a) must either a) all be the same length or b) \code{m} and \code{d} must be of
@@ -47,5 +56,8 @@ amlr_date_from_season("1999/00", 3, 4)
 amlr_date_from_season("1999/00", 12, 4)
 amlr_date_from_season(c("1996/97", "2016/17"), c(3, 10), c(28, 19))
 amlr_date_from_season(c("1996/97", "2016/17"), 1, 1)
+
+amlr_year_from_season("2016/17")
+amlr_year_from_season(c("1998/99", "1999/00", "2000/01"))
 
 }

@@ -20,6 +20,7 @@
 #' @importFrom purrr compact set_names
 #' @importFrom shinydashboard dashboardPage dashboardHeader dashboardSidebar
 #'   sidebarMenu menuItem dashboardBody tabItems tabItem box
+#' @importFrom stringr str_pad str_sub
 #' @importFrom utils globalVariables write.csv
 #'
 #' @keywords internal

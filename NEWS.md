@@ -1,6 +1,8 @@
 # amlrDatabases 0.7.1.9000 (dev)
 
-* Documentation updates
+* Added [stringr](https://stringr.tidyverse.org/) as a dependency for easier string processing. 
+
+* Added the function `amlr_year_from_season` to calculate the AMLR year form a season name (e.g., the AMLR year for the 2000/01 season is 2001)
 
 
 # amlrDatabases 0.7.0
