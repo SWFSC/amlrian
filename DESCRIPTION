@@ -1,10 +1,9 @@
-Package: amlrDatabases
-Title: General Functions for US AMLR Database Packages
+Package: amlrian
+Title: Functions for NOAA US AMLR Program
 Version: 0.7.1.9000
 Authors@R: 
         person("Sam", "Woodman", email = "sam.woodman@noaa.gov", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-6071-8186"))
-Description: A collection of functions used by other US AMLR packages
-    for Shiny apps connected to US AMLR databases.
+Description: The package for code that gets things done: a collection of functions used by other US AMLR packages.
 Depends: R (>= 4.0.0)
 Imports: 
     dplyr (>= 1.0),
