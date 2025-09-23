@@ -9,7 +9,7 @@
 #' @param Trusted_Connection character; default is 'Yes'
 #' @param Encrypt character; default is 'Optional'
 #' @param idleTimeout integer; default is one hour
-#' @param silent logical; default is \code{TRUE}.
+#' @param silent logical; default is `TRUE`.
 #'   Passed as an argument to [base::try()]
 #' @param ... additional arguments passed to [pool::dbPool()] or
 #'   [odbc::dbConnect()]
@@ -17,10 +17,10 @@
 #' @name amlr_db
 #"
 #' @details Wrapper for a call to [pool::dbPool()] or [odbc::dbConnect()], with
-#' the [odbc::odbc()] driver passed to \code{drv}. See the above-linked
+#' the [odbc::odbc()] driver passed to `drv`. See the above-linked
 #' functions for more information about these arguments.
 #'
-#' Arguments that are \code{NULL} are ignored and not passed to the database
+#' Arguments that are `NULL` are ignored and not passed to the database
 #' connection function. This allows you to, for instance pass a username and
 #' password rather than Trusted_Connection string (see examples).
 #'
@@ -86,7 +86,7 @@ amlr_dbConnect <- function(Database, Server,
 
 # Check driver
 .driver_check <- function(Driver) {
-  if (Driver != amlrDatabases::amlr.driver)
+  if (Driver != amlrian::amlr.driver)
     warning("You are not connecting with the AMLR-preferred driver: ",
-            amlrDatabases::amlr.driver, immediate. = TRUE)
+            amlrian::amlr.driver, immediate. = TRUE)
 }

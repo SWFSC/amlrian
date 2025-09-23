@@ -40,8 +40,8 @@ mod_database_ui <- function(id,
     pull(name) %>%
     unique()
 
-  if (!(amlrDatabases::amlr.driver %in% drivers.list))
-    warning("The preferred driver ('", amlrDatabases::amlr.driver,
+  if (!(amlrian::amlr.driver %in% drivers.list))
+    warning("The preferred driver ('", amlrian::amlr.driver,
             "') is not available on this machine")
 
   # assemble UI elements
@@ -63,7 +63,7 @@ mod_database_ui <- function(id,
                                 value = database.default)),
             column(6, selectInput(ns("db_other_driver"), tags$h5("Driver"),
                                   choices = drivers.list,
-                                  selected = amlrDatabases::amlr.driver))
+                                  selected = amlrian::amlr.driver))
           ),
           fluidRow(
             column(6, checkboxInput(ns("db_other_port_check"),

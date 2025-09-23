@@ -1,21 +1,21 @@
-#' Open the amlrDatabases Shiny app
+#' Open the package test Shiny app
 #'
-#' Open the amlrDatabases Shiny app
+#' Open the package test Shiny app
 #'
 #' @param ... arguments passed as a list to the `options` argument of
 #'   [shiny::runApp()]
-#' @param filedsn character; see [amlrDatabases::mod_database()] for details
+#' @param filedsn character; see [mod_database()] for details
 #'
 #' @details
-#' The amlrDatabases Shiny app is a testing/development app. To date, is has
-#' been used to develop and test the datbase connection and output modules
+#' The Shiny app is a testing/development app. To date, is has
+#' been used to develop and test the database connection and output modules
 #' contained in this package
 #'
 #' @examplesIf interactive()
-#' amlrDatabases_shiny(launch.browser = TRUE)
+#' shiny_test(launch.browser = TRUE)
 #'
 #' @export
-amlrDatabases_shiny <- function(..., filedsn = NULL) {
+shiny_test <- function(..., filedsn = NULL) {
   ##### Prep work
   # NOTE: yes, this intentionally duplicates the filedsn connection
   # Left as an example
@@ -31,8 +31,8 @@ amlrDatabases_shiny <- function(..., filedsn = NULL) {
 
   ##### Shiny app
   ui <- dashboardPage(
-    title = "Testing amlrDatabases",
-    dashboardHeader(title = "Testing amlrDatabases"),
+    title = "Dev shiny app",
+    dashboardHeader(title = "Dev shiny app"),
 
     dashboardSidebar(
       sidebarMenu(

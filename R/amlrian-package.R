@@ -1,10 +1,10 @@
-#' General functions used by other US AMLR packages
+#' Functions for NOAA US AMLR Program
 #'
-#' General functions used by other US AMLR packages
+#' Functions for NOAA US AMLR Program
 #'
-#' @name amlrDatabases-package
-#' @aliases amlrDatabases
-#' @title General Functions for US AMLR Database Packages
+#' @name amlrian-package
+#' @aliases amlrian
+#' @title Functions for NOAA US AMLR Program
 #' @author Sam Woodman \email{sam.woodman@@noaa.gov}
 #'
 #' @import shiny

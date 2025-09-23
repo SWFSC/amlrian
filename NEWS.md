@@ -1,6 +1,6 @@
 # amlrian 0.7.1.9000 (dev)
 
-* Renamed package to `amlrian`
+* Renamed package to `amlrian`, and moved to the SWFSC GitHub org. The new package url is [https://github.com/SWFSC/amlrian](https://github.com/SWFSC/amlrian)
 
 * Added [stringr](https://stringr.tidyverse.org/) as a dependency for easier string processing. 
 
@@ -74,12 +74,12 @@
 
 * Update `mod_database` to allow user to specify other database with user/pwd/port login
 
-* `mod_output` now takes parent's session object as input, rather than ID, for more robust way of generating output IDs and defualt download names
+* `mod_output` now takes parent's session object as input, rather than ID, for more robust way of generating output IDs and default download names
 
 
 # amlrDatabases 0.2.0
 
-* Added 'Encrypt' as an argument to `amlr_dbPool` and changed teh default driver to ODBC Driver 18 for SQL Server
+* Added 'Encrypt' as an argument to `amlr_dbPool` and changed the default driver to ODBC Driver 18 for SQL Server
 
 
 # amlrDatabases 0.1.0
