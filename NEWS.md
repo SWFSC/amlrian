@@ -1,4 +1,6 @@
-# amlrDatabases 0.7.1.9000 (dev)
+# amlrian 0.7.1.9000 (dev)
+
+* Renamed package to `amlrian`
 
 * Added [stringr](https://stringr.tidyverse.org/) as a dependency for easier string processing. 
 
