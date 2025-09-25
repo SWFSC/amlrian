@@ -1,6 +1,6 @@
 Package: amlrian
 Title: Functions for NOAA US AMLR Program
-Version: 0.7.1.9000
+Version: 1.0.0
 Authors@R: 
         person("Sam", "Woodman", email = "sam.woodman@noaa.gov", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-6071-8186"))
 Description: The package for code that gets things done: a collection of functions used by other US AMLR packages.

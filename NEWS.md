@@ -1,4 +1,4 @@
-# amlrian 0.7.1.9000 (dev)
+# amlrian 1.0.0
 
 * Renamed package to `amlrian`, and moved to the SWFSC GitHub org. The new package url is [https://github.com/SWFSC/amlrian](https://github.com/SWFSC/amlrian)
 
