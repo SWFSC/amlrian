@@ -8,7 +8,7 @@
 \usage{
 mod_output_ui(id, ...)
 
-mod_output_server(id, tbl.reac, plot.reac)
+mod_output_server(id, tbl.reac, plot.reac, txt.reac = NULL)
 }
 \arguments{
 \item{id}{module namespace, see \code{shiny::\link[shiny]{NS}}}
@@ -18,7 +18,10 @@ below the plot and above the save plot button}
 
 \item{tbl.reac}{reactive; data frame to be displayed in the table}
 
-\item{plot.reac}{reactive; \code{\link[ggplot2]{ggplot}} object to be plotted}
+\item{plot.reac}{reactive; \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} object to be plotted}
+
+\item{txt.reac}{optional reactive; text string to print between the plot
+and data table. If \code{NULL}, the default, then nothing is printed}
 }
 \value{
 Nothing

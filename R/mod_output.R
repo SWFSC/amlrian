@@ -50,6 +50,7 @@ mod_output_ui <- function(id, ...) {
           downloadButton(ns("plot_download"), "Save plot as PNG")
         )
       ),
+      uiOutput(ns("txt_uiOut")),
       box(
         status = "primary", width = 12, collapsible = TRUE,
         uiOutput(ns("tbl_uiOut")),
@@ -63,15 +64,18 @@ mod_output_ui <- function(id, ...) {
 #' @name mod_output
 #'
 #' @param tbl.reac reactive; data frame to be displayed in the table
-#' @param plot.reac reactive; \code{\link[ggplot2]{ggplot}} object to be plotted
+#' @param plot.reac reactive; [ggplot2::ggplot()] object to be plotted
+#' @param txt.reac optional reactive; text string to print between the plot
+#'   and data table. If `NULL`, the default, then nothing is printed
 #'
 #' @returns Nothing
 #'
 #' @export
-mod_output_server <- function(id, tbl.reac, plot.reac) {
+mod_output_server <- function(id, tbl.reac, plot.reac, txt.reac = NULL) {
   stopifnot(
     is.reactive(tbl.reac),
-    is.reactive(plot.reac)
+    is.reactive(plot.reac),
+    is.reactive(txt.reac) || is.null(txt.reac)
   )
 
   # NOTE for table and plot server sections:
@@ -174,6 +178,18 @@ mod_output_server <- function(id, tbl.reac, plot.reac) {
         }
       )
 
+
+      #------------------------------------------------------------------------
+      # Text
+      output$txt_uiOut <- renderUI({
+        txt <- try(txt.reac(), silent = TRUE)
+        req(txt)
+
+        box(
+          status = "primary", width = 12, collapsible = TRUE,
+          txt
+        )
+      })
 
       #------------------------------------------------------------------------
       # Table

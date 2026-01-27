@@ -1,3 +1,14 @@
+# amlrian 1.1.0 (dev)
+
+* Added function `amlr_box`, a wrapper around `shinydashboard::box` with given shiny app defaults. 
+
+* `amlr_box` and `tableNA` live under the documentation name `amlr_wrappers`
+
+* `mod_output` now allows the user to pass reactive, to display text (e.g., Sit Rep summary text) between the plot and the table 
+
+* Updated shiny test app to test updated `mod_output`
+
+
 # amlrian 1.0.0
 
 * Renamed package to `amlrian`, and moved to the SWFSC GitHub org. The new package url is [https://github.com/SWFSC/amlrian](https://github.com/SWFSC/amlrian)

@@ -56,15 +56,21 @@ mod_database_ui <- function(id,
         condition = "input.db_conn == 'other'", ns = ns,
         box(
           width = 12,
-          fluidRow(
-            column(6, textInput(ns("db_other_server"), tags$h5("Server hostname"),
-                                value = server.default)),
-            column(6, textInput(ns("db_other_database"), tags$h5("Database"),
-                                value = database.default)),
-            column(6, selectInput(ns("db_other_driver"), tags$h5("Driver"),
-                                  choices = drivers.list,
-                                  selected = amlrian::amlr.driver))
-          ),
+          textInput(ns("db_other_server"), tags$h5("Server hostname"),
+                    value = server.default),
+          textInput(ns("db_other_database"), tags$h5("Database"),
+                    value = database.default),
+          selectInput(ns("db_other_driver"), tags$h5("Driver"),
+                      choices = drivers.list, selected = amlrian::amlr.driver),
+          # fluidRow(
+          #   column(6, textInput(ns("db_other_server"), tags$h5("Server hostname"),
+          #                       value = server.default)),
+          #   column(6, textInput(ns("db_other_database"), tags$h5("Database"),
+          #                       value = database.default)),
+          #   column(6, selectInput(ns("db_other_driver"), tags$h5("Driver"),
+          #                         choices = drivers.list,
+          #                         selected = amlrian::amlr.driver))
+          # ),
           fluidRow(
             column(6, checkboxInput(ns("db_other_port_check"),
                                     "Specify port number",

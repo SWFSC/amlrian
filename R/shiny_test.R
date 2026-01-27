@@ -51,33 +51,39 @@ shiny_test <- function(..., filedsn = NULL) {
       color: red; font-weight: bold;
       }
     "))),
-    tabItems(
-      tabItem(
-        "tab_database",
-        mod_database_ui("db", col.width = 12)
-      ),
-      tabItem(
-        "tab_output",
-        box(
-          width = 7,
-          tags$h5("To double check database connectivity, specify a ",
-                  "table name and click 'Fetch' to print the ",
-                  "head() of the table. ",
-                  tags$br(), tags$br(),
-                  "Note that tables may have columns that can't be printed; ",
-                  "these columns may cause an error if not removed."),
-          fluidRow(
-            column(6, textInput("tbl_name", tags$h5("Table name"))),
-            column(6, tags$br(), tags$br(), actionButton("tbl_go", "Fetch"))
-          ),
-          fluidRow(
-            column(6, uiOutput("tbl_x_uiOut")),
-            column(6, uiOutput("tbl_y_uiOut"))
-          )
+      tabItems(
+        tabItem(
+          "tab_database",
+          fluidRow(mod_database_ui("db", col.width = 6))
         ),
-        mod_output_ui("tbl_test")
+        tabItem(
+          "tab_output",
+          fluidRow(
+            box(
+              width = 7,
+              tags$h5("To double check database connectivity, specify a ",
+                      "table name and click 'Fetch' to print the ",
+                      "head() of the table. ",
+                      tags$br(), tags$br(),
+                      "Note that tables may have columns that can't be printed; ",
+                      "these columns may cause an error if not removed."),
+              fluidRow(
+                column(6, textInput("tbl_name", tags$h5("Table name"))),
+                column(6, tags$br(), tags$br(), actionButton("tbl_go", "Fetch"))
+              ),
+              conditionalPanel(
+                condition = "output.tbl_flag",
+                fluidRow(
+                  column(4, checkboxInput("txt_display", "Display text")),
+                  column(4, uiOutput("tbl_x_uiOut")),
+                  column(4, uiOutput("tbl_y_uiOut"))
+                )
+              )
+            )
+          ),
+          mod_output_ui("out_test")
+        )
       )
-    )
     )
   )
 
@@ -101,8 +107,12 @@ shiny_test <- function(..., filedsn = NULL) {
     db.pool <- mod_database_server("db", pool.list, filedsn = filedsn)
 
 
+    output$tbl_flag <- reactive(isTruthy(out_tbl()))
+    outputOptions(output, "tbl_flag", suspendWhenHidden = FALSE)
+
+
     #--------------------------------------------------------
-    tbl_tbl <- eventReactive(input$tbl_go, {
+    out_tbl <- eventReactive(input$tbl_go, {
       x <- try(collect(tbl(db.pool(), input$tbl_name)), silent = TRUE)
       validate(need(x, "Unable to fetch table"))
 
@@ -111,17 +121,17 @@ shiny_test <- function(..., filedsn = NULL) {
 
     output$tbl_x_uiOut <- renderUI({
       selectInput("tbl_x", tags$h5("X axis variable"),
-                  choices = names(tbl_tbl()))
+                  choices = names(out_tbl()))
     })
 
     output$tbl_y_uiOut <- renderUI({
       selectInput("tbl_y", tags$h5("Y axis variable"),
-                  choices = names(tbl_tbl()),
-                  selected = names(tbl_tbl())[2])
+                  choices = names(out_tbl()),
+                  selected = names(out_tbl())[2])
     })
 
-    tbl_plot <- reactive({
-      x <- req(tbl_tbl())
+    out_plot <- reactive({
+      x <- req(out_tbl())
       validate(
         need(!identical(input$tbl_x, input$tbl_y),
              "Please choose different variables for x and y")
@@ -133,7 +143,25 @@ shiny_test <- function(..., filedsn = NULL) {
 
     })
 
-    observe(mod_output_server("tbl_test", tbl_tbl, tbl_plot))
+    out_text <- reactive({
+      x <- req(out_tbl())
+      # validate(
+      #   need(!identical(input$tbl_x, input$tbl_y),
+      #        "Please choose different variables for x and y")
+      # )
+
+      if (input$txt_display) {
+        tagList(
+          tags$strong("Header test"),
+          tags$h5(paste("The table", input$tbl_name, "has been loaded"))
+        )
+      } else {
+        NULL
+      }
+    })
+
+    observe(mod_output_server("out_test", out_tbl, out_plot, out_text))
+    # observe(mod_output_server("out_test", out_tbl, out_plot, NULL))
   }
 
   shiny::shinyApp(ui = ui, server = server, options = list(...))
