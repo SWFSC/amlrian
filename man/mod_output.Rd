@@ -11,7 +11,7 @@ mod_output_ui(id, ...)
 mod_output_server(id, tbl.reac, plot.reac, txt.reac = NULL)
 }
 \arguments{
-\item{id}{module namespace, see \code{shiny::\link[shiny]{NS}}}
+\item{id}{module namespace, see \code{\link[shiny:NS]{shiny::NS()}}}
 
 \item{...}{UI elements to be displayed in the plot box,
 below the plot and above the save plot button}

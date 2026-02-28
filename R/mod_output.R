@@ -4,7 +4,7 @@
 #'
 #' @name mod_output
 #'
-#' @param id module namespace, see \code{shiny::\link[shiny]{NS}}
+#' @param id module namespace, see [shiny::NS()]
 #' @param ... UI elements to be displayed in the plot box,
 #'   below the plot and above the save plot button
 #'
